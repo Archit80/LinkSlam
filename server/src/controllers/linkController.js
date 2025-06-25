@@ -174,8 +174,22 @@ export const updateLink = async (req, res) => {
             : []) ) || link.tags;
         link.isPublic = isPublic !== undefined ? isPublic : link.isPublic;
         link.isNSFW = isNSFW !== undefined ? isNSFW : link.isNSFW;
-        
+
         await link.save(); // Save the updated link
+
+        return res.status(200).json({
+            message: "Link updated successfully",
+            link: {
+                id: link._id,
+                url: link.url,
+                title: link.title,
+                tags: link.tags,
+                isPublic: link.isPublic,
+                isNSFW: link.isNSFW,
+                createdAt: link.createdAt,
+                userId: link.userId
+            }
+        });
 
     } catch (error) {
         console.error("Error updating link:", error);
