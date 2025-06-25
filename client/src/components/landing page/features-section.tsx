@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Lock, Globe, Shuffle, Settings, Tag, Sparkles } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lock, Globe, Shuffle, Settings, Tag, Sparkles } from "lucide-react";
 
 export default function FeaturesSection() {
   return (
@@ -16,7 +16,8 @@ export default function FeaturesSection() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 text-lg">
-                Your private vault for links. Save anything, keep it secret, keep it safe.
+                Your private vault for links. Save anything, keep it secret,
+                keep it safe.
               </p>
             </CardContent>
           </Card>
@@ -28,7 +29,8 @@ export default function FeaturesSection() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 text-lg">
-                Discover public links shared by other users. Dive into the stream!
+                Discover public links shared by other users. Dive into the
+                stream!
               </p>
             </CardContent>
           </Card>
@@ -40,7 +42,8 @@ export default function FeaturesSection() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 text-lg">
-                Feeling adventurous? Hit the randomizer for a curated selection of links.
+                Feeling adventurous? Hit the randomizer for a curated selection
+                of links.
               </p>
             </CardContent>
           </Card>
@@ -51,7 +54,9 @@ export default function FeaturesSection() {
               <Settings className="h-8 w-8 text-red-400" />
             </CardHeader>
             <CardContent>
-              <p className="text-gray-300 text-lg">Control your viewing experience. Toggle NSFW content on or off.</p>
+              <p className="text-gray-300 text-lg">
+                Control your viewing experience. Toggle NSFW content on or off.
+              </p>
             </CardContent>
           </Card>
 
@@ -62,22 +67,28 @@ export default function FeaturesSection() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 text-lg">
-                Filter links by tags to find exactly what you&apos;re looking for.
+                Filter links by tags to find exactly what you&apos;re looking
+                for.
               </p>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900/30 border-gray-800 text-white shadow-lg hover:border-red-primary transition-colors duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-2xl font-bold">🔥 UI</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Sleek, Modern Interface
+              </CardTitle>
               <Sparkles className="h-8 w-8 text-red-400" />
             </CardHeader>
             <CardContent>
-              <p className="text-gray-300 text-lg">A user interface that is dark, sleek, and intuitive.</p>
+              <p className="text-gray-300 text-lg">
+                Dark mode default. Built to be intuitive and elegant for your
+                links collection.
+              </p>
             </CardContent>
           </Card>
         </div>
       </div>
     </section>
-  )
+  );
 }

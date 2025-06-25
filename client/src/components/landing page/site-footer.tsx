@@ -20,7 +20,7 @@ export default function SiteFooter() {
             Join the chaos. Discover, save, and share the links that truly deserve it.
           </p>
         </div>
-        <Button asChild className="bg-red-500 text-white hover:bg-red-primary text-lg px-8 py-6 rounded-lg">
+        <Button asChild className="bg-red-500 text-white hover:bg-red-700 text-lg px-8 py-6 rounded-lg">
           <Link href="#">Get Started</Link>
         </Button>
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-400">

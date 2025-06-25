@@ -2,6 +2,8 @@ import cors from 'cors';
 import express from 'express';
 import authRoutes from './routes/authRoutes.js';
 import googleAuthRoutes from './routes/authGoogle.js';
+import linkRoutes from './routes/linkRoutes.js';
+import {authMiddleware} from './middlewares/authMiddleware.js';
 import cookieParser from 'cookie-parser';
 import session from "express-session";
 import passport from "passport";
@@ -16,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(authMiddleware); // Apply auth middleware globally
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
@@ -24,6 +27,8 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 // app.use('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.use('/auth/google', googleAuthRoutes);
+
+app.use('/link', linkRoutes);
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "keyboardcat",

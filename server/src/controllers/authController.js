@@ -18,6 +18,7 @@ export const signup = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
+     
 
     //FLOW 1: if already exists
     const existingUser = await User.findOne({ email });
