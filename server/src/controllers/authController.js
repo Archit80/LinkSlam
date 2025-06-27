@@ -58,7 +58,7 @@ export const signup = async (req, res) => {
         httpOnly: true,
         secure: false,
         // secure: process.env.NODE_ENV === "production",
-        sameSite: 'none', //bcoz frontend on vercel and backend on render
+        sameSite: 'lax', //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
       })
       .status(201)
@@ -70,9 +70,10 @@ export const signup = async (req, res) => {
         },
       });
 
+
   } catch (error) {
     console.error("Error during signup:", error);
-    return res.status(500).json({ message: "sign up error", err });
+    return res.status(500).json({ message: "sign up error", error });
   }
 };
 
@@ -128,10 +129,10 @@ export const login = async (req, res) => {
         httpOnly: true,
         secure: false,
         // secure: process.env.NODE_ENV === "production",
-        sameSite: 'none', //bcoz frontend on vercel and backend on render
+        sameSite: 'lax', //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
       })
-      .status(201)
+      .status(200)
       .json({
         user: {
           id: existingUser._id,

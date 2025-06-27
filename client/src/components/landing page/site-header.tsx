@@ -11,12 +11,12 @@ export default function SiteHeader() {
           <span className="font-bold text-white text-lg">LinkSlam</span>
         </Link>
         <nav className="flex items-center space-x-4">
-          <Link href="#">
+          <Link href="/auth">
             Login
           </Link>
           
           <Button asChild variant="outline" className="bg-white text-black hover:bg-gray-200">
-            <Link href="#">Sign up</Link>
+            <Link href="/auth">Sign up</Link>
           </Button>
         </nav>
       </div>

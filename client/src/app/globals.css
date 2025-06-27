@@ -5,7 +5,8 @@
 
 @theme inline {
   --color-red-primary: #ef4545;
-  --font-geist-sans: "Geist Sans", sans-serif;
+  --font-geist-sans: "Geist", sans-serif;
+  --font-interface: "Inter", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -82,12 +83,12 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: #0A0B0B;
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  --card: oklch(0.211 0.0042 308.24);
+  --card-foreground: oklch(0.211 0.0042 308.24);
   --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --popover-foreground: oklch(0.211 0.0042 308.24);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
@@ -116,10 +117,102 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  :root {
+    --background: 0 0% 3.9%; /* zinc-950 */
+    --foreground: 0 0% 98%; /* zinc-50 */
+
+    --card: 240 5.9% 10%; /* zinc-900 */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 5.9% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 0 0% 98%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar specific variables */
+    --sidebar-background: 0 0% 0%; /* Pure black for maximum darkness */
+    --sidebar-foreground: 0 0% 98%; /* zinc-50 */
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 15.9%; /* zinc-800 */
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 0 0% 98%; /* Using foreground for ring to match red accents */
   }
-  body {
-    @apply bg-background text-foreground;
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 5.9% 10%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 5.9% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 0 0% 98%;
+
+    /* Sidebar specific variables (same for dark mode in this case) */
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 0 0% 98%;
   }
 }
+
+
+.my-masonry-grid {
+  display: -webkit-box; 
+  display: -ms-flexbox; 
+  display: flex;
+  margin-left: -16px; 
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 16px;
+  background-clip: padding-box;
+}
+
+.my-masonry-grid_column > div {
+  margin-bottom: 16px;
+}
+

@@ -11,14 +11,25 @@ import "./config/passport.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000', // Adjust the origin as needed
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(authMiddleware); // Apply auth middleware globally
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || "keyboardcat",
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
@@ -30,13 +41,7 @@ app.use('/auth/google', googleAuthRoutes);
 
 app.use('/link', linkRoutes);
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || "keyboardcat",
-  resave: false,
-  saveUninitialized: false,
-}));
+// app.use(authMiddleware); // Apply auth middleware globally
 
-app.use(passport.initialize());
-app.use(passport.session());
 
 export default app;

@@ -18,12 +18,16 @@ router.get("/callback",
     });
 
     res
+      .status(200)
       .cookie("token", token, {
         httpOnly: true,
-        sameSite: "lax", // bcoz frontend on vercel and backend on render
+        secure : false,
+        sameSite: "Lax", // bcoz frontend on vercel and backend on render
         secure: false, // true in prod
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+
       })
-      .redirect("http://localhost:3000/dashboard"); // change as needed
+      .redirect("http://localhost:3000/my-zone"); // TODO: change to public feed path
   }
 );
 

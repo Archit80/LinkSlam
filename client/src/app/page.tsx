@@ -9,9 +9,9 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#060606] text-white flex flex-col selection:bg-red-100 selection:text-red-700">
       <SiteHeader />
+      
       <main className="flex-1 md:px-14">
         <HeroSection />
-         
         <FeaturesSection />
         <VisualTeaserSection />
         <CommunityPunchlineSection />

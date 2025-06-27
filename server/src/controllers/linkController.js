@@ -7,7 +7,8 @@ export const createLink = async (req, res) =>{
         return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const { url, title, tags, isPublic, isNSFW } = req.body;
+    const { title, tags, isPublic, isNSFW } = req.body;
+    let url = req.body.url.trim();
     const userId = req.user.id; // user ID is stored in req.user after authentication
 
     try {
@@ -16,9 +17,14 @@ export const createLink = async (req, res) =>{
             return res.status(400).json({ message: "URL and title are required" });
         }
         
-         // Validate that url starts with http:// or https:// and ends with a .domain
-        if (!/^https?:\/\/.+\.[a-zA-Z]{2,}$/.test(url)) {
-            return res.status(400).json({ message: "URL must start with https:// and end with a valid domain (.com, .net, ...)" });
+        if (!/^(https?:\/\/)?([\w-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/.test(url)) {
+            return res.status(400).json({
+                message: "Please enter a valid URL with a domain like example.com or dev.to",
+            });
+        }
+
+        if (!/^https?:\/\//.test(url)) {
+            url = 'https://' + url;
         }
         
         //Array.isArray -> agar already ek array hai to let it be (tagsArray = tags)
@@ -157,13 +163,12 @@ export const updateLink = async (req, res) => {
         if(!linkId) {
             return res.status(400).json({ message: "Link ID is required" });
         }
-        
         // Validate that the link exists and belongs to the authenticated user
         const link = await Link.findOne({ _id: linkId, userId: req.user.id });
         if (!link) {
             return res.status(404).json({ message: "Link not found or unauthorized" });
         }
-
+        
         // Update the link with new data
         link.url = url || link.url;
         link.title = title || link.title;
@@ -172,9 +177,13 @@ export const updateLink = async (req, res) => {
             typeof tags === "string"
             ? tags.split(',').map(tag => tag.trim()).filter(Boolean)
             : []) ) || link.tags;
-        link.isPublic = isPublic !== undefined ? isPublic : link.isPublic;
-        link.isNSFW = isNSFW !== undefined ? isNSFW : link.isNSFW;
-
+            link.isPublic = isPublic !== undefined ? isPublic : link.isPublic;
+            link.isNSFW = isNSFW !== undefined ? isNSFW : link.isNSFW;
+            
+            if (!/^https?:\/\//.test(link.url)) {
+                link.url = 'https://' + link.url;
+            }
+            
         await link.save(); // Save the updated link
 
         return res.status(200).json({
