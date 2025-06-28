@@ -101,7 +101,8 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40 bg-card dark border-zinc-700">
-            <DropdownMenuItem onClick={() => onEdit(link)} className="cursor-pointer hover:bg-zinc-800 text-white">
+            <DropdownMenuItem   disabled={!link?._id}
+ onClick={() => onEdit(link)} className="cursor-pointer hover:bg-zinc-800 text-white">
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem

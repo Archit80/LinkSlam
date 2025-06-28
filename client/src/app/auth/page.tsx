@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Mail, Lock, User, Chrome, Loader2 } from "lucide-react"
+import { Mail, Lock, User, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { authService } from "@/services/authService" // Adjust the import based on your auth service location
 import { useRouter } from "next/navigation"
@@ -24,7 +24,10 @@ export default function LoginPage() {
 
   const router = useRouter()
 
+  
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+  
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

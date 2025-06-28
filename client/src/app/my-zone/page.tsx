@@ -23,8 +23,17 @@ export default function MySlamZonePage() {
     setIsModalOpen(true)
   }
 
-  const handleDeleteLink = (id: string) => {
-    setLinks(links.filter((link) => link._id !== id))
+  const handleDeleteLink = async (id: string) => {
+    alert("Are you sure you want to delete this link?");
+    try {
+      const response = await userLinksService.deleteLink(id)
+      console.log("Deleted link:", response.data);
+      if(response.status === 200){
+        setLinks(links.filter((link) => link._id !== id))
+      }
+    } catch (error) {
+      console.log("Error deleting link:", error);
+    }
   }
 
   const handleSaveLink = async (newLink: LinkItem) => {

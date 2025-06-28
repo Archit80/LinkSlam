@@ -41,6 +41,16 @@ export const authService = {
             console.error('Error during Google login:', error);
             throw error;
         }
-    }
+    },
+
+    logout: async () => {
+        try {
+            const response = await api.post('auth/logout');
+            return response;
+        } catch (error) {
+            console.error('Error during logout:', error);
+            throw error;
+        }
+    },
 
 }

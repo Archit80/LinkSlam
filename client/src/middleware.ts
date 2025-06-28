@@ -9,7 +9,14 @@ export function middleware(request: NextRequest) {
 
   const isProtected = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
-  )
+  ) 
+
+  const path = request.nextUrl.pathname
+
+  if (path.startsWith('/auth') && token) {
+    return NextResponse.redirect(new URL('/my-zone', request.url))
+  }
+
 
   if (isProtected && !token) {
     // Redirect to home page if no token
@@ -21,6 +28,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/my-zone'
-  ],
+    '/my-zone',
+     '/auth/:path*',   
+    '/my-zone/:path*'
+    ],
 }

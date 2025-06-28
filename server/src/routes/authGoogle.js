@@ -4,12 +4,16 @@ import jwt from "jsonwebtoken";
 
 const router = Router();
 
-router.get("/", passport.authenticate("google", {
-  scope: ["profile", "email"],
-}));
+router.get(
+  "/",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
 
-router.get("/callback",
-  passport.authenticate("google", { failureRedirect: "/login", session: false }),
+router.get(
+  "/callback",
+  passport.authenticate("google", { failureRedirect: "/auth", session: false }),
   (req, res) => {
     const user = req.user;
 
@@ -21,11 +25,10 @@ router.get("/callback",
       .status(200)
       .cookie("token", token, {
         httpOnly: true,
-        secure : false,
-        sameSite: "Lax", // bcoz frontend on vercel and backend on render
-        secure: false, // true in prod
+        secure: false, // false for localhost
+        sameSite: "Lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
-
+        path: "/", // Ensure cookie is sent for all paths
       })
       .redirect("http://localhost:3000/my-zone"); // TODO: change to public feed path
   }

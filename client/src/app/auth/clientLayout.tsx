@@ -12,10 +12,9 @@ export default function AuthClientLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <body >
-        {children}
-      </body>
-    </html>
+    <div className="dark">
+      {children}
+    </div>
+   
   )
 }

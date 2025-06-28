@@ -44,8 +44,18 @@ export const userLinksService = {
                 const response = await api.put(`link/update/${linkId}`, linkData);
                 return response.data;
           } catch (error) {
-                console.error('Error updating link:', error);
+                console.error('Error updatingbut  link:', error);
                 return error;
           }
+    },
+
+    deleteLink : async (linkId) => {
+        try {
+            const response = await api.delete(`link/delete/${linkId}`);
+            return response;
+        } catch (error) {
+            console.error('Error deleting link:', error);
+            return error;
+        }
     },
 }

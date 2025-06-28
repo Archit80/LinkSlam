@@ -1,15 +1,42 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 
 export default function SiteFooter() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      const threshold = 50 // Pixels from bottom to trigger animation
+      
+      if (scrollPosition >= documentHeight - threshold) {
+        setIsVisible(true)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    
+    // Check on mount in case user is already at bottom
+    handleScroll()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   return (
     <footer className="w-full py-12 md:py-16 bg-[#060606] text-white relative overflow-hidden">
       {/* Semi-circle gradient element */}
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120vw] h-[60vw] rounded-t-full pointer-events-none"
+        className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-[120vw] h-[60vw] rounded-t-full pointer-events-none transition-transform duration-1000 ease-out ${
+          isVisible ? 'translate-y-[62%]' : 'translate-y-[100%]'
+        }`}
         style={{
-          background: "radial-gradient(circle at 50% 100%, rgba(240, 25, 25, 0.9) 0%, transparent 70%)",
-          transform: "translateX(0%) translateY(64%)", // Increased translateY to push it further down
+          background: "radial-gradient(circle at 50% 100%, rgba(240, 25, 25, 0.95) 0%, transparent 70%)",
           zIndex: 0,
         }}
       />
@@ -21,7 +48,7 @@ export default function SiteFooter() {
           </p>
         </div>
         <Button asChild className="bg-red-500 text-white hover:bg-red-700 text-lg px-8 py-6 rounded-lg">
-          <Link href="#">Get Started</Link>
+          <Link href="/auth">Get Started</Link>
         </Button>
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-400">
           <Link href="#" className="hover:underline">
