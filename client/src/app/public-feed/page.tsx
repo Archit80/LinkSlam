@@ -9,8 +9,6 @@ import { LinkFormModal } from "@/components/link-form-modal";
 import { useEffect, useState } from "react";
 import { publicLinksService } from "@/services/publicLinksService";
 
-// Dummy data for public links (can be different from private ones)
-
 export default function PublicFeedPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
