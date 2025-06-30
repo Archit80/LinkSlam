@@ -31,13 +31,14 @@ import {
 } from "@/components/ui/sidebar"
 import { authService } from "@/services/authService"
 import { useRouter } from "next/navigation"
+import { useUser } from "@/contexts/userContext"
 
 // Dummy data for the sidebar
-const userData = {
-  name: "Slammer User",
-  email: "user@linkslam.com",
-  avatar: "/placeholder.svg?height=32&width=32",
-}
+// const userData = {
+//   name: "Slammer User",
+//   email: "user@linkslam.com",
+//   avatar: "/placeholder.svg?height=32&width=32",
+// }
 
 const navMain = [
   {
@@ -66,6 +67,16 @@ const navMain = [
 
 
 export function SidebarNav() {
+
+  const { user, loading } = useUser();
+
+  const userData = {
+  name: user?.name || "LinkSlam User",
+  email: user?.email ||  "user@linkslam.com",
+  // avatar: user?.avatar || "/placeholder.svg?height=32&width=32",
+}
+
+
   const isMobile = useIsMobile()
   const router = useRouter();
 
@@ -76,6 +87,10 @@ export function SidebarNav() {
     console.log("User logged out");
     router.replace("/"); // Redirect to the auth page after logout
     }
+  }
+
+  if (loading) {
+    return <div className="flex dark bg-card items-center justify-center h-screen ">Loading...</div>
   }
 
   return (
@@ -162,12 +177,14 @@ export function SidebarNav() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup className="dark">
                   <DropdownMenuItem className="dark bg-card text-zinc-100">
+                    <Link href={`/profile/${user?._id}`} className="flex items-center gap-2">
                     <Settings className="mr-2 h-4 w-4 dark text-zinc-200 " />
                     <span className="text-zinc-100 " >Settings</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="hover:text-red-primary dark bg-card dark" onClick={handleLogout} >
+                <DropdownMenuItem className="hover:text-red-primary dark bg-card dark hover:cursor-pointer" onClick={handleLogout} >
                   <LogOut className="mr-2 h-4 w-4 text-zinc-100 hover:text-red-primary" />
                   <span className="text-zinc-100 ">Log out</span>
                 </DropdownMenuItem>

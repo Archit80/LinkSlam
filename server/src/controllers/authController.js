@@ -2,10 +2,6 @@ import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
-
-//SIGN UP FUNCTION (NEW USER)
-
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
   try {
@@ -40,24 +36,15 @@ export const signup = async (req, res) => {
       name,
     });
 
-    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, {
+    // Use process.env.JWT_SECRET directly
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // return res.status(201).json({
-    //   user: {
-    //     id: newUser._id,
-    //     email: newUser.email,
-    //     name: newUser.name,
-    //   },
-    //   token,
-    // });
-
-     return res
+    return res
       .cookie("token", token, {
         httpOnly: true,
         secure: false,
-        // secure: process.env.NODE_ENV === "production",
         sameSite: 'lax', //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
       })
@@ -112,23 +99,14 @@ export const login = async (req, res) => {
     }
 
     //PASSWORD VALID, GENERATE JWT TOKEN
-    const token = jwt.sign({ id: existingUser._id }, JWT_SECRET, {
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // return res.status(200).json({
-    //   user: {
-    //     id: existingUser._id,
-    //     email: existingUser.email,
-    //     name: existingUser.name,
-    //   },
-    //   token,
-    // });
     return res
       .cookie("token", token, {
         httpOnly: true,
         secure: false,
-        // secure: process.env.NODE_ENV === "production",
         sameSite: 'lax', //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
       })
@@ -153,4 +131,41 @@ export const logout = async (req, res) => {
         return res.status(500).json({ message: 'Logout error', error });
     }
 
+}
+
+// export const getCurrentUser = async (req, res) => {
+//   try {
+//     const token = req.cookies.token;
+//     if (!token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     const user = await User.findById(decoded.id).select("-password");
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     return res.status(200).json(user);
+//   } catch (error) {
+//     console.error("Error fetching current user:", error);
+//     return res.status(500).json({ message: "Internal server error", error });
+//   }
+// }
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    // req.user is already set by authMiddleware
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
 }

@@ -17,6 +17,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/my-zone', request.url))
   }
 
+  if (path === '/' && token) {
+    return NextResponse.redirect(new URL('/my-zone', request.url))
+  }
+
 
   if (isProtected && !token) {
     // Redirect to home page if no token
@@ -30,6 +34,7 @@ export const config = {
   matcher: [
     '/my-zone',
      '/auth/:path*',   
-    '/my-zone/:path*'
+    '/my-zone/:path*',
+    '/'
     ],
 }

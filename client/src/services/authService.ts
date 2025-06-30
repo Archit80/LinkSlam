@@ -53,4 +53,14 @@ export const authService = {
         }
     },
 
+    getCurrentUser : async () => {
+        try {
+            const response = await api.get('auth/me');
+            return response;
+        } catch (error) {
+            console.error('Error fetching current user:', error);
+            throw error;
+        }
+    }
+
 }

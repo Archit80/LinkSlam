@@ -15,7 +15,8 @@ export interface LinkItem {
   tags: string[]
   isPublic: boolean
   isNSFW: boolean
-//   previewImage?: string  
+  previewImage?: string  
+  userId: string
 }
 
 interface LinkCardProps {
@@ -37,20 +38,16 @@ function formatUrl(url: string): string {
 }
 
 export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
-//   const domain = link.url.replace(/^(https?:\/\/)?(www\.)?/, "").split("/")[0]
-//   const domain = link.url.replace(/^(https?:\/\/)?(www\.)?/i, "")         
-//                          .toLowerCase()                                   
-//                          .replace(/(?<=\.com\/).{11,}/, (match) => match.slice(0, 12))
   const [showContent, setShowContent] = useState(false)
 
   const isBlurred = link.isNSFW && !showContent
 
   return (
-    <Card className="group relative rounded-md overflow-hidden bg-card gap-2 border-zinc-800 hover:border-red-400 transition-colors duration-300">
+    <Card className="group relative hover:bg-transparent rounded-md overflow-hidden bg-card gap-2 border-zinc-800 hover:border-red-400 transition-all duration-300 ease-in-out">
       {link.previewImage && (
         <>
           <div
-            className={`absolute inset-0 z-10 hidden group-hover:block ${isBlurred ? "blur-md" : ""}`}
+            className={`absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out ${isBlurred ? "blur-md" : ""}`}
             style={{
               backgroundImage: `url(${link.previewImage})`,
               backgroundSize: "cover",
@@ -59,7 +56,7 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
           />
 
           {/* Single overlay for the entire card content on hover */}
-          <div className="absolute inset-0 z-20 hidden group-hover:block bg-black/70" />
+          <div className="absolute inset-0 z-20 opacity-0 group-hover:opacity-100 bg-black/75 transition-opacity duration-500 ease-in-out" />
         </>
       )}
 
@@ -79,13 +76,18 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-red-primary transition-colors duration-200"
+            className="hover:text-red-primary transition-colors duration-300 ease-in-out"
           >
             {link.title}
           </Link>
         </CardTitle>
         <p className="text-md text-muted-foreground truncate">
-          <Link href={link.url} target="_blank" rel="noopener noreferrer" className="text-red-primary hover:underline hover:text-red-500">
+          <Link 
+            href={link.url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-red-primary hover:underline hover:bg-background hover:px-2 transition-all duration-200 hover:py-2 rouneded-full hover:text-red-500"
+          >
             {formatUrl(link.url)}
           </Link>
         </p>
@@ -94,20 +96,23 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute -top-2 right-2 h-8 w-8 text-muted-foreground hover:bg-zinc-700 hover:text-foreground hover:cursor-pointer"
+              className="absolute -top-2 right-2 h-8 w-8 text-muted-foreground hover:bg-zinc-700 hover:text-foreground hover:cursor-pointer transition-all duration-300 ease-in-out"
             >
               <MoreHorizontal className="h-4 w-4 hover:cursor-pointer" />
               <span className="sr-only">Link actions</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40 bg-card dark border-zinc-700">
-            <DropdownMenuItem   disabled={!link?._id}
- onClick={() => onEdit(link)} className="cursor-pointer hover:bg-zinc-800 text-white">
+            <DropdownMenuItem   
+              disabled={!link?._id}
+              onClick={() => onEdit(link)} 
+              className="cursor-pointer hover:bg-zinc-800 text-white transition-colors duration-300 ease-in-out"
+            >
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onDelete(link._id)}
-              className="cursor-pointer text-red-400 dark hover:bg-zinc-800 hover:text-red-400"
+              className="cursor-pointer text-red-400 dark hover:bg-zinc-800 hover:text-red-400 transition-colors duration-300 ease-in-out"
             >
               Delete
             </DropdownMenuItem>
@@ -120,9 +125,11 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
           <Badge
             key={tag}
             variant="secondary"
-            className="bg-zinc-700 text-zinc-300 hover:bg-red-500 hover:text-red-500-foreground transition-colors duration-200 text-xs px-2 py-1 rounded-full"
+            className="bg-zinc-700 text-zinc-300 hover:text-white hover:bg-red-500 hover:text-red-500-foreground transition-colors duration-250 ease-in-out text-xs px-2 py-1 rounded-full"
           >
+            <span className="hover:text-white">
             {tag}
+            </span>
           </Badge>
         ))}
         {link.isPublic ? (

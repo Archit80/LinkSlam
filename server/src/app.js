@@ -9,6 +9,7 @@ import session from "express-session";
 import passport from "passport";
 import "./config/passport.js"; 
 import dotenv from "dotenv";
+import { getPublicFeedLinks } from './controllers/publicLinkController.js';
 dotenv.config();
 
 const app = express();
@@ -51,6 +52,8 @@ app.use('/auth', authRoutes);
 app.use('/auth/google', googleAuthRoutes);
 
 app.use('/link', linkRoutes);
+
+app.use('/public-feed', getPublicFeedLinks); // Public feed route
 
 // app.use(authMiddleware); // Apply auth middleware globally
 

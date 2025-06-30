@@ -7,6 +7,7 @@ const linkSchema = new mongoose.Schema(
         tags: [{ type: String }],
         isPublic: { type: Boolean, default: false },
         isNSFW: { type: Boolean, default: false },
+        previewImage: { type: String },
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
     },
     { timestamps: true }

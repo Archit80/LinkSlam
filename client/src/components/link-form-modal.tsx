@@ -2,15 +2,21 @@
 
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { X, Loader2 } from "lucide-react" 
+import { X, Loader2 } from "lucide-react"
 import type { LinkItem } from "./link-card"
-import '../app/globals.css'  
+import "../app/globals.css"
 
 interface LinkFormModalProps {
   isOpen: boolean
@@ -19,12 +25,19 @@ interface LinkFormModalProps {
   initialData?: LinkItem | null
 }
 
-export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFormModalProps) {
+// export const LinkItem;
+
+export function LinkFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+}: LinkFormModalProps) {
   const [title, setTitle] = useState(initialData?.title || "")
   const [url, setUrl] = useState(initialData?.url || "")
   const [tags, setTags] = useState<string[]>(initialData?.tags || [])
-  const [tagInput, setTagInput] = useState("") // For the current tag being typed
-  const [isPrivate, setIsPrivate] = useState(initialData?.isPublic ?? true)
+  const [tagInput, setTagInput] = useState("")
+  const [isPrivate, setIsPrivate] = useState(initialData?.isPublic === false)
   const [isNSFW, setIsNSFW] = useState(initialData?.isNSFW ?? false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [urlError, setUrlError] = useState<string | null>(null)
@@ -39,7 +52,6 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
       setIsPrivate(!initialData.isPublic)
       setIsNSFW(initialData.isNSFW)
     } else {
-      // Reset form for new link
       setTitle("")
       setUrl("")
       setTags([])
@@ -47,8 +59,8 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
       setIsPrivate(true)
       setIsNSFW(false)
     }
-    setIsSubmitting(false) // Reset submission state on modal open/data change
-    setUrlError(null) // Clear URL error
+    setIsSubmitting(false)
+    setUrlError(null)
   }, [initialData, isOpen])
 
   const handleAddTag = () => {
@@ -65,34 +77,41 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
 
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault() // Prevent form submission
+      e.preventDefault()
       handleAddTag()
     } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
-      // Allow removing last tag with backspace if input is empty
       setTags(tags.slice(0, tags.length - 1))
     }
   }
 
   const handleSubmit = async () => {
-    // Basic URL validation
-    // if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    //   setUrlError("URL must start with http:// or https://")
-    //   return
-    // } else {
-    //   setUrlError(null)
-    // }
+    let validatedUrl = url
+    if (!/^https?:\/\//.test(url)) {
+      validatedUrl = "https://" + url
+    }
 
     setIsSubmitting(true)
-    const newLink: LinkItem = {
-    ...(initialData?._id && { _id: initialData._id }), // only include if exists
-      title,
-      url,
-      tags,
-      isPublic : !isPrivate, // isPublic is the opposite of isPrivate
-      isNSFW,
-      // previewImage: initialData?.previewImage, // Preserve existing preview image if editing
-    }
-    await onSubmit(newLink) // Assuming onSubmit might be async (e.g., saving to DB)
+    
+    const newLink: LinkItem = initialData && initialData._id
+      ? {
+          // Editing existing link - include _id
+          _id: initialData._id,
+          title,
+          url: validatedUrl,
+          tags,
+          isPublic: !isPrivate,
+          isNSFW,
+        }
+      : {
+          // Creating new link - don't include _id, let server generate it
+          title,
+          url: validatedUrl,
+          tags,
+          isPublic: !isPrivate,
+          isNSFW,
+        } as LinkItem // Type assertion since _id is required in LinkItem but server will add it
+      
+    await onSubmit(newLink)
     setIsSubmitting(false)
     onClose()
   }
@@ -100,13 +119,14 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] dark bg-card border-zinc-700 text-foreground shadow-md rounded-lg">
-       
         <DialogHeader className="pb-4 border-b border-zinc-800">
           <DialogTitle className="text-red-primary text-2xl font-bold">
             {initialData ? "Edit Link" : "New Link"}
           </DialogTitle>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
+          {/* Title */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right text-zinc-300">
               Title
@@ -115,10 +135,12 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="col-span-3 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
+              className="col-span-3 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
               required
             />
           </div>
+
+          {/* URL */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="url" className="text-right text-zinc-300">
               URL
@@ -128,15 +150,19 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
                 id="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className={`w-full bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors ${
+                className={`w-full bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
                   urlError ? "border-red-500" : ""
                 }`}
                 required
                 type="url"
               />
-              {urlError && <p className="text-red-500 text-xs mt-1">{urlError}</p>}
+              {urlError && (
+                <p className="text-red-500 text-xs mt-1">{urlError}</p>
+              )}
             </div>
           </div>
+
+          {/* Tags */}
           <div className="grid grid-cols-4 items-start gap-4">
             <Label htmlFor="tags" className="text-right pt-2 text-zinc-300">
               Tags
@@ -150,61 +176,81 @@ export function LinkFormModal({ isOpen, onClose, onSubmit, initialData }: LinkFo
                 onKeyDown={handleTagInputKeyDown}
                 onBlur={handleAddTag}
                 placeholder="Add tags (e.g., webdev, ai)"
-                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
               />
               <div className="flex flex-wrap gap-2 min-h-[32px]">
                 {tags.map((tag) => (
                   <Badge
                     key={tag}
                     variant="secondary"
-                    className="bg-zinc-700 text-zinc-300 pr-1 cursor-pointer hover:bg-zinc-600 transition-colors rounded-md flex items-center gap-1"
+                    className="bg-zinc-700 text-zinc-300 pr-1 cursor-pointer hover:bg-zinc-600 rounded-md flex items-center gap-1"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="rounded-full p-0.5 hover:bg-zinc-500 focus:outline-none focus:ring-1 focus:ring-red-500 "
+                      className="rounded-full p-0.5 hover:bg-zinc-500 hover:cursor-pointer focus:outline-none focus:ring-1 focus:ring-red-500"
                       aria-label={`Remove tag ${tag}`}
                     >
-                      <X className="h-3 w-3 hover:cursor-pointer" />
+                      <X className="h-3 w-3" />
                     </button>
                   </Badge>
                 ))}
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="private" className="text-right text-zinc-300">
-              Private
-            </Label>
-            <Switch
-              id="private"
-              checked={isPrivate}
-              onCheckedChange={setIsPrivate}
-              className="col-span-3 data-[state=checked]:bg-red-primary data-[state=unchecked]:bg-zinc-700"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="nsfw" className="text-right text-zinc-300">
-              NSFW
-            </Label>
-            <Switch
-              id="nsfw"
-              checked={isNSFW}
-              onCheckedChange={setIsNSFW}
-              className="col-span-3 data-[state=checked]:bg-red-primary data-[state=unchecked]:bg-zinc-700"
-            />
+
+          {/* Visibility & NSFW */}
+          <div className="grid gap-2">
+            <div className="grid grid-cols-2 gap-4 bg-zinc-900 p-4 rounded-md border border-zinc-700">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-zinc-200 font-medium">Private</span>
+                  <span className="text-zinc-500 text-xs">
+                    Only you can view this link
+                  </span>
+                </div>
+                <Switch
+                  id="private"
+                  checked={isPrivate}
+                  onCheckedChange={setIsPrivate}
+                  className="data-[state=checked]:bg-red-primary data-[state=unchecked]:bg-zinc-700 hover:cursor-pointer"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-zinc-200 font-medium">NSFW</span>
+                  <span className="text-zinc-500 text-xs">
+                    Mark as sensitive content
+                  </span>
+                </div>
+                <Switch
+                  id="nsfw"
+                  checked={isNSFW}
+                  onCheckedChange={setIsNSFW}
+                  className="data-[state=checked]:bg-red-primary data-[state=unchecked]:bg-zinc-700 hover:cursor-pointer"
+                />
+              </div>
+            </div>
           </div>
         </div>
+
         <DialogFooter className="pt-4 border-t border-zinc-800">
           <Button
             type="submit"
             onClick={handleSubmit}
             disabled={isSubmitting || !title || !url || urlError !== null}
-            className="bg-red-500 text-red-500-foreground hover:bg-red-400 transition-colors flex items-center gap-2 hover:cursor-pointer"
+            className="bg-red-500 text-white hover:bg-red-400 transition-colors flex items-center gap-2"
           >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSubmitting ? (initialData ? "Saving..." : "Creating...") : initialData ? "Save Changes" : "Create Link"}
+            {isSubmitting
+              ? initialData
+                ? "Saving..."
+                : "Creating..."
+              : initialData
+              ? "Save Changes"
+              : "Create Link"}
           </Button>
         </DialogFooter>
       </DialogContent>

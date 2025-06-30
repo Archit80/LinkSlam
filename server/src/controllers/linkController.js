@@ -1,5 +1,6 @@
 import Link from '../models/link.js';
 // import authMiddleware from '../middleware/authMiddleware.js';
+import { fetchOgImage } from '../utils/fetchOgImage.js';
 
 export const createLink = async (req, res) =>{
     // Ensure the user is authenticated
@@ -10,7 +11,7 @@ export const createLink = async (req, res) =>{
     const { title, tags, isPublic, isNSFW } = req.body;
     let url = req.body.url.trim();
     const userId = req.user.id; // user ID is stored in req.user after authentication
-
+    const previewImage = await fetchOgImage(url)
     try {
         // Validate inputs
         if(!url || !title || typeof url !== 'string' || typeof title !== 'string') {
@@ -35,6 +36,7 @@ export const createLink = async (req, res) =>{
             ? tags.split(',').map(tag => tag.trim()).filter(Boolean)
             : []);
             // Agar kuch aur hai to empty array
+            
 
         const newLink = await Link.create({
             url,
@@ -42,18 +44,20 @@ export const createLink = async (req, res) =>{
             tags: tagsArray,
             isPublic: isPublic || false,
             isNSFW: isNSFW || false,
-            userId
+            userId,
+            previewImage: previewImage || null // Store the fetched preview image
         })
 
         return res.status(201).json({
             message: "Link created successfully",
             link: {
-                id: newLink._id,
+                _id: newLink._id,
                 url: newLink.url,
                 title: newLink.title,
                 tags: newLink.tags,
                 isPublic: newLink.isPublic,
                 isNSFW: newLink.isNSFW,
+                previewImage: newLink.previewImage, // Include the preview image in the response
                 createdAt: newLink.createdAt,
                 userId: newLink.userId
             }
@@ -158,6 +162,7 @@ export const deleteLink = async (req, res) => {
 export const updateLink = async (req, res) => {
     const {linkId} = req.params; // Get linkId from request parameters
     const { url, title, tags, isPublic, isNSFW } = req.body; // Get updated link data from request body
+    const previewImage = await fetchOgImage(url)
 
     try {
         if(!linkId) {
@@ -183,18 +188,20 @@ export const updateLink = async (req, res) => {
             if (!/^https?:\/\//.test(link.url)) {
                 link.url = 'https://' + link.url;
             }
+        link.previewImage = previewImage || link.previewImage; // Update the preview image if provided
             
         await link.save(); // Save the updated link
 
         return res.status(200).json({
             message: "Link updated successfully",
             link: {
-                id: link._id,
+                _id: link._id,
                 url: link.url,
                 title: link.title,
                 tags: link.tags,
                 isPublic: link.isPublic,
                 isNSFW: link.isNSFW,
+                previewImage: link.previewImage, // Include the preview image in the response
                 createdAt: link.createdAt,
                 userId: link.userId
             }

@@ -225,3 +225,15 @@ html {
 .perspective-1000 {
   perspective: 1000px;
 }
+
+/* Style the default Dialog close button */
+[data-radix-dialog-content] > button[aria-label*="Close"],
+[data-radix-dialog-content] > button[aria-label*="close"] {
+  cursor: pointer !important;
+}
+
+[data-radix-dialog-content] > button[aria-label*="Close"]:hover,
+[data-radix-dialog-content] > button[aria-label*="close"]:hover {
+  opacity: 0.8;
+  background-color: rgba(244, 63, 94, 0.1);
+}

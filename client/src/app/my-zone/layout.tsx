@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import MyZoneClientLayout from "./clientLayout";
 // import "../globals.css"
+import { UserProvider } from "@/contexts/userContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,7 @@ export default async function MyZoneLayout({
   return (
     <div className={inter.className}>
       <MyZoneClientLayout defaultOpen={defaultOpen}>
-        {children}
+        <UserProvider>{children}</UserProvider>
       </MyZoneClientLayout>
     </div>
   );
