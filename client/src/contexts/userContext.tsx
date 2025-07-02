@@ -9,6 +9,8 @@ type User = {
   name: string
   createdAt: string
   updatedAt: string
+  likedLinks: string[]
+  savedLinks: string[]
 }
 
 type UserContextType = {

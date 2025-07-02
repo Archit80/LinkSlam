@@ -30,7 +30,7 @@ router.get(
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/", // Ensure cookie is sent for all paths
       })
-      .redirect("http://localhost:3000/my-zone"); // TODO: change to public feed path
+      .redirect("http://localhost:3000/public-feed"); 
   }
 );
 

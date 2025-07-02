@@ -113,7 +113,7 @@ export const getPrivateLinks = async (req,res) =>{
 
 export const getPublicLinks = async (req, res) => {
     try {
-        const publicLinks = await Link.find({ isPublic: true });
+        const publicLinks = await Link.find({ userId: req.user.id, isPublic: true });
         return res.status(200).json({
             message: "Public links fetched successfully",
             links: publicLinks

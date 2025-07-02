@@ -29,6 +29,26 @@ export const userLinksService = {
         }
    },
 
+   getPublicLinks : async () => {
+        try {
+            const response = await api.get(`link/get-public`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching public links:', error);
+            return error;
+        }
+   },
+
+   getPrivateLinks : async () => {
+        try {
+            const response = await api.get(`link/get-private`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching private links:', error);
+            return error;
+        }   
+    },
+
    createLink : async (linkData) => {
     try {
         const response = await api.post(`link/create`, linkData);
@@ -39,7 +59,7 @@ export const userLinksService = {
     }
    } ,
 
-    updateLink : async (linkId, linkData) => {
+    updateLink : async (linkId:string, linkData) => {
           try {
                 const response = await api.put(`link/update/${linkId}`, linkData);
                 return response.data;
@@ -49,7 +69,7 @@ export const userLinksService = {
           }
     },
 
-    deleteLink : async (linkId) => {
+    deleteLink : async (linkId: string) => {
         try {
             const response = await api.delete(`link/delete/${linkId}`);
             return response;

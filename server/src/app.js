@@ -3,6 +3,7 @@ import express from 'express';
 import authRoutes from './routes/authRoutes.js';
 import googleAuthRoutes from './routes/authGoogle.js';
 import linkRoutes from './routes/linkRoutes.js';
+import publicLinkRoutes from './routes/publicLinkRoutes.js';
 import {authMiddleware} from './middlewares/authMiddleware.js';
 import cookieParser from 'cookie-parser';
 import session from "express-session";
@@ -53,7 +54,7 @@ app.use('/auth/google', googleAuthRoutes);
 
 app.use('/link', linkRoutes);
 
-app.use('/public-feed', getPublicFeedLinks); // Public feed route
+app.use('/public', publicLinkRoutes); // Public feed route
 
 // app.use(authMiddleware); // Apply auth middleware globally
 

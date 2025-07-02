@@ -237,3 +237,18 @@ html {
   opacity: 0.8;
   background-color: rgba(244, 63, 94, 0.1);
 }
+
+
+.group:hover .preview-layer {
+  will-change: transform, opacity;
+}
+
+
+/* /styles/dev-overrides.css */
+#__nextjs-error-overlay,
+.nextjs-toast-errors {
+  top: unset !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  left: unset !important;
+}

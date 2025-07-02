@@ -24,11 +24,8 @@ export default function LoginPage() {
 
   const router = useRouter()
 
-  
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
   
-  
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -47,7 +44,7 @@ export default function LoginPage() {
         console.log("Login response:", response)
         if (response.status === 200) {
           console.log("Login successful!")
-          router.replace("/my-zone") //TODO: replace with Public Feed Path
+          router.replace("/public-feed") 
         } else {
           setError(response.data || "Login failed. Please try again.")
         }
@@ -72,7 +69,7 @@ export default function LoginPage() {
             // console.log(response);
             if (response.status === 201) {
                 console.log("Signup successful!")
-                router.replace("/my-zone") //TODO: replace with Public Feed Path
+                router.replace("/public/feed") 
             } else {
                 setError(response.data.message || "Signup failed. Please try again.")
             }
@@ -100,7 +97,7 @@ export default function LoginPage() {
       window.location.href = `${API_BASE_URL}/auth/google` // Redirect to your backend Google auth endpoint;
     //   if (response.status === 200) {
     //     console.log("Google login successful!")
-    //     router.replace("/my-zone") //TODO: replace with Public Feed Path
+    //     router.replace("/public-feed") 
     //   } else {
     //     setError(response.data || "Google login failed. Please try again.")
     //   }

@@ -1,28 +1,29 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import type React from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
-import { X, Loader2 } from "lucide-react"
-import type { LinkItem } from "./link-card"
-import "../app/globals.css"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { X, Loader2 } from "lucide-react";
+import type { LinkItem } from "./link-card";
+import "../app/globals.css";
 
 interface LinkFormModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (link: LinkItem) => void
-  initialData?: LinkItem | null
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (link: LinkItem) => void;
+  initialData?: LinkItem | null;
+  fromPublicFeed?: boolean;
 }
 
 // export const LinkItem;
@@ -32,89 +33,91 @@ export function LinkFormModal({
   onClose,
   onSubmit,
   initialData,
+  fromPublicFeed,
 }: LinkFormModalProps) {
-  const [title, setTitle] = useState(initialData?.title || "")
-  const [url, setUrl] = useState(initialData?.url || "")
-  const [tags, setTags] = useState<string[]>(initialData?.tags || [])
-  const [tagInput, setTagInput] = useState("")
-  const [isPrivate, setIsPrivate] = useState(initialData?.isPublic === false)
-  const [isNSFW, setIsNSFW] = useState(initialData?.isNSFW ?? false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [urlError, setUrlError] = useState<string | null>(null)
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [url, setUrl] = useState(initialData?.url || "");
+  const [tags, setTags] = useState<string[]>(initialData?.tags || []);
+  const [tagInput, setTagInput] = useState("");
+  const [isPrivate, setIsPrivate] = useState(initialData?.isPublic === false);
+  const [isNSFW, setIsNSFW] = useState(initialData?.isNSFW ?? false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
 
-  const tagInputRef = useRef<HTMLInputElement>(null)
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (initialData) {
-      setTitle(initialData.title)
-      setUrl(initialData.url)
-      setTags(initialData.tags)
-      setIsPrivate(!initialData.isPublic)
-      setIsNSFW(initialData.isNSFW)
+      setTitle(initialData.title);
+      setUrl(initialData.url);
+      setTags(initialData.tags);
+      setIsPrivate(!initialData.isPublic);
+      setIsNSFW(initialData.isNSFW);
     } else {
-      setTitle("")
-      setUrl("")
-      setTags([])
-      setTagInput("")
-      setIsPrivate(true)
-      setIsNSFW(false)
+      setTitle("");
+      setUrl("");
+      setTags([]);
+      setTagInput("");
+      setIsPrivate(true);
+      setIsNSFW(false);
     }
-    setIsSubmitting(false)
-    setUrlError(null)
-  }, [initialData, isOpen])
+    setIsSubmitting(false);
+    setUrlError(null);
+  }, [initialData, isOpen]);
 
   const handleAddTag = () => {
-    const trimmedTag = tagInput.trim()
+    const trimmedTag = tagInput.trim();
     if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag])
-      setTagInput("")
+      setTags([...tags, trimmedTag]);
+      setTagInput("");
     }
-  }
+  };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove))
-  }
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
 
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault()
-      handleAddTag()
+      e.preventDefault();
+      handleAddTag();
     } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
-      setTags(tags.slice(0, tags.length - 1))
+      setTags(tags.slice(0, tags.length - 1));
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    let validatedUrl = url
+    let validatedUrl = url;
     if (!/^https?:\/\//.test(url)) {
-      validatedUrl = "https://" + url
+      validatedUrl = "https://" + url;
     }
 
-    setIsSubmitting(true)
-    
-    const newLink: LinkItem = initialData && initialData._id
-      ? {
-          // Editing existing link - include _id
-          _id: initialData._id,
-          title,
-          url: validatedUrl,
-          tags,
-          isPublic: !isPrivate,
-          isNSFW,
-        }
-      : {
-          // Creating new link - don't include _id, let server generate it
-          title,
-          url: validatedUrl,
-          tags,
-          isPublic: !isPrivate,
-          isNSFW,
-        } as LinkItem // Type assertion since _id is required in LinkItem but server will add it
-      
-    await onSubmit(newLink)
-    setIsSubmitting(false)
-    onClose()
-  }
+    setIsSubmitting(true);
+
+    const newLink: LinkItem =
+      initialData && initialData._id
+        ? {
+            // Editing existing link - include _id
+            _id: initialData._id,
+            title,
+            url: validatedUrl,
+            tags,
+            isPublic: !isPrivate,
+            isNSFW,
+          }
+        : ({
+            // Creating new link - don't include _id, let server generate it
+            title,
+            url: validatedUrl,
+            tags,
+            isPublic: !isPrivate,
+            isNSFW,
+          } as LinkItem); // Type assertion since _id is required in LinkItem but server will add it
+
+    await onSubmit(newLink);
+    setIsSubmitting(false);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -212,9 +215,10 @@ export function LinkFormModal({
                 </div>
                 <Switch
                   id="private"
-                  checked={isPrivate}
+                  checked={fromPublicFeed ? false : isPrivate}
                   onCheckedChange={setIsPrivate}
-                  className="data-[state=checked]:bg-red-primary data-[state=unchecked]:bg-zinc-700 hover:cursor-pointer"
+                  disabled={fromPublicFeed}
+                  className="data-[state=checked]:bg-red-primary data-[state=unchecked]:bg-zinc-700 hover:cursor-pointer "
                 />
               </div>
 
@@ -241,7 +245,7 @@ export function LinkFormModal({
             type="submit"
             onClick={handleSubmit}
             disabled={isSubmitting || !title || !url || urlError !== null}
-            className="bg-red-500 text-white hover:bg-red-400 transition-colors flex items-center gap-2"
+            className="bg-red-500 text-white hover:bg-red-400 transition-colors flex items-center gap-2 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-red-500/70  "
           >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting
@@ -255,5 +259,5 @@ export function LinkFormModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

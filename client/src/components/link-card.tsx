@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Lock, Globe, EyeOff, MoreHorizontal } from "lucide-react"
+import { Lock, Globe, EyeOff, MoreHorizontal, Bookmark } from "lucide-react"
 import Link from "next/link"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,8 @@ export interface LinkItem {
   isNSFW: boolean
   previewImage?: string  
   userId: string
+  likes?: string[];
+  sourceId?: string; // Optional, used to indicate if the link is saved
 }
 
 interface LinkCardProps {
@@ -41,7 +43,8 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
   const [showContent, setShowContent] = useState(false)
 
   const isBlurred = link.isNSFW && !showContent
-
+  const isSaved = !!link.sourceId;
+  
   return (
     <Card className="group relative hover:bg-transparent rounded-md overflow-hidden bg-card gap-2 border-zinc-800 hover:border-red-400 transition-all duration-300 ease-in-out">
       {link.previewImage && (
@@ -104,7 +107,7 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40 bg-card dark border-zinc-700">
             <DropdownMenuItem   
-              disabled={!link?._id}
+              disabled={!link?._id || isSaved }
               onClick={() => onEdit(link)} 
               className="cursor-pointer hover:bg-zinc-800 text-white transition-colors duration-300 ease-in-out"
             >
@@ -141,6 +144,14 @@ export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
             <Lock className="h-3 w-3 mr-1" /> Private
           </Badge>
         )}
+        {link.sourceId && (
+          <div className="absolute -top-10 right-3 z-40">
+            <div className="bg-green-500/20 backdrop-blur-sm border border-green-500/30 rounded-full p-1.5">
+              <Bookmark className="h-3 w-3 text-green-400 fill-green-400" />
+            </div>
+          </div>
+        )}
+
       </CardContent>
     </Card>
   )
