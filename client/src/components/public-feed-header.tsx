@@ -1,13 +1,43 @@
-"use client"
-
-import { Flame, Search, Shuffle, TrendingUp } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { LinkCard } from "./public-link-card"
+"use client";
+import { useRouter } from "next/navigation";
+import {
+  Flame,
+  Search,
+  Shuffle,
+  TrendingUp,
+  Link as LinkIcon,
+  User,
+  ChevronDown,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 interface PublicFeedHeaderProps {
-  onNewLinkClick: () => void
+  onNewLinkClick: () => void;
+  onTagClick: (tag: string) => void;
+
+  query: string;
+  setQuery: (value: string) => void;
+  onSearch: () => void;
+
+  searchType: "links" | "users";
+  setSearchType: (type: "links" | "users") => void;
+
+  userSearchResults: any[];
+  setUserSearchResults: (results: any[]) => void;
+  showUserSuggestions: boolean;
+  setShowUserSuggestions: (val: boolean) => void;
+
+  onDebouncedInput?: () => void;
 }
 
 const chaosLinks = [
@@ -46,10 +76,47 @@ const handleRandomLink = () => {
   window.open(randomUrl, "_blank");
 };
 
+export function PublicFeedHeader({
+  onNewLinkClick,
+  onTagClick,
+  query,
+  setQuery,
+  onSearch,
+  searchType,
+  setSearchType,
+  userSearchResults,
+  setUserSearchResults,
+  showUserSuggestions = false,
+  setShowUserSuggestions,
+  onDebouncedInput,
+}: PublicFeedHeaderProps) {
+  const popularTags = [
+    "webdev",
+    "haha",
+    "hm",
+    "new",
+    "tools",
+    "news",
+    "react",
+    "nextjs",
+  ]; //TODO: add actual tags
 
+  const router = useRouter();
 
-export function PublicFeedHeader({ onNewLinkClick }: PublicFeedHeaderProps) {
-  const popularTags = ["webdev", "ai", "design", "productivity", "tools", "news", "react", "nextjs"]
+  // Local state fallback if no prop is provided
+  const [localSearchType, setLocalSearchType] = useState<"links" | "users">(
+    "links"
+  );
+
+  // Use prop state if available, otherwise use local state
+  const currentSearchType = setSearchType ? searchType : localSearchType;
+  const handleSearchTypeChange = (type: "links" | "users") => {
+    if (setSearchType) {
+      setSearchType(type);
+    } else {
+      setLocalSearchType(type);
+    }
+  };
 
   return (
     <div className="relative bg-background border-b border-zinc-800">
@@ -65,7 +132,9 @@ export function PublicFeedHeader({ onNewLinkClick }: PublicFeedHeaderProps) {
             <div className="flex size-10 text-red-500 items-center justify-center rounded-xl shadow-lg">
               <Flame className="size-10 text-red-primary" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white">LinkSlam</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white">
+              LinkSlam
+            </h1>
           </div>
           <p className="text-zinc-400 text-lg max-w-2xl">
             Discover and share the web's most amazing links with the community
@@ -74,21 +143,112 @@ export function PublicFeedHeader({ onNewLinkClick }: PublicFeedHeaderProps) {
 
         {/* Search Section */}
         <div className="w-full max-w-3xl space-y-6">
-          {/* Search Bar */}
+          {/* Search Bar with Dropdown */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="absolute left-1 top-1/2 -translate-y-1/2 h-8 mr-2 text-muted-foreground hover:bg-zinc-700 flex items-center gap-1"
+                >
+                  {currentSearchType === "links" ? (
+                    <LinkIcon className="h-4 w-4" />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )}
+                  <span className="text-xs font-medium">
+                    {currentSearchType === "links" ? "Links" : "Users"}
+                  </span>
+                  <ChevronDown className="h-3 w-3 opacity-70" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="bg-zinc-800 border-zinc-700"
+              >
+                <DropdownMenuItem
+                  className="text-zinc-200 hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
+                  onClick={() => handleSearchTypeChange("links")}
+                >
+                  <LinkIcon className="h-4 w-4 mr-2" />
+                  Search Links
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-zinc-200 hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
+                  onClick={() => handleSearchTypeChange("users")}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Search Users
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Input
               type="text"
-              placeholder="Search for links, topics, or domains..."
-              className="pl-12 pr-4 py-3 text-lg bg-zinc-800 border-zinc-700 focus-visible:ring-red-500 focus-visible:border-red-500 rounded-xl"
+              value={query}
+              onChange={(e) => {
+                const val = e.target.value;
+                setQuery?.(val);
+
+                if (searchType === "users") {
+                  onDebouncedInput?.(); // call debounced search
+                } else {
+                  setUserSearchResults?.([]);
+                  setShowUserSuggestions?.(false);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onSearch?.();
+              }}
+              placeholder={
+                currentSearchType === "links"
+                  ? "Search for links, topics, or domains..."
+                  : "Search for users by name or username..."
+              }
+              className="pl-28 pr-14 py-3 text-lg bg-zinc-800 border-zinc-700 focus-visible:ring-red-500 focus-visible:border-red-500 rounded-xl"
             />
+            <Button
+              onClick={() => onSearch?.()}
+              className="group absolute hover:cursor-pointer right-0 top-1/2 -translate-y-1/2 h-9 w-9 bg-red-primary hover:bg-red-400 text-white rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30"
+            >
+              <span className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <Search className="h-5 w-5 transform transition-all duration-300 group-hover:rotate-[-12deg] group-hover:scale-110 group-active:rotate-[-20deg]" />
+            </Button>
+            {searchType === "users" &&
+              userSearchResults &&
+              userSearchResults.length > 0 &&
+              showUserSuggestions && (
+                <div className="absolute left-0 right-0 mt-2 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                  {userSearchResults.map((user: any) => (
+                    <button
+                      key={user._id}
+                      onClick={() => {
+                        router.push(`/profile/${user._id}`);
+                        setShowUserSuggestions?.(false);
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-zinc-700 text-white flex items-center gap-3"
+                    >
+                      <Image
+                        src={user.profileImage?.url || "/default-avatar.png"}
+                        alt="avatar"
+                        width={6}
+                        height={6}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                      <span className="font-medium">
+                        {user.username || user.name || "Unnamed"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* Glowing Random Link Button */}
             <Button
-            onClick={handleRandomLink}
+              onClick={handleRandomLink}
               className="bg-red-500 hover:cursor-crosshair hover:bg-red-400 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg hover:shadow-red-500/50 transition-all duration-300"
               style={{
                 boxShadow:
@@ -96,7 +256,7 @@ export function PublicFeedHeader({ onNewLinkClick }: PublicFeedHeaderProps) {
               }}
             >
               <Shuffle className="h-5 w-5 mr-2" />
-              Surprise Me 
+              Surprise Me
             </Button>
 
             {/* <Button
@@ -110,18 +270,27 @@ export function PublicFeedHeader({ onNewLinkClick }: PublicFeedHeaderProps) {
 
           {/* Popular Tags */}
           <div className="space-y-3">
-            <h3 className="text-lg font-bold text-zinc-300 text-center">Popular Tags</h3>
+            <h3 className="text-lg font-bold text-zinc-300 text-center">
+              Popular Tags
+            </h3>
+
             <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
+                onClick={() => window.location.reload()} // or re-fetch the feed
+                className="cursor-pointer group-hover:text-white hover:text-white group hover:bg-red-500 hover:text-red-500-foreground transition-colors duration-200 text-sm px-3 py-1 rounded-full bg-zinc-700 text-zinc-300"
+              >
+                All Links
+              </button>
               {popularTags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
+                  onClick={() => onTagClick?.(tag)}
                   className="cursor-pointer group-hover:text-white hover:text-white group hover:bg-red-500 hover:text-red-500-foreground transition-colors duration-200 text-sm px-3 py-1 rounded-full bg-zinc-700 text-zinc-300"
-                > 
-                <span className="hover:text-white group-hover:text-white transition-colors duration-200">
-                  #{tag}
-
-                </span>
+                >
+                  <span className="hover:text-white group-hover:text-white transition-colors duration-200">
+                    #{tag}
+                  </span>
                 </Badge>
               ))}
             </div>
@@ -142,6 +311,5 @@ export function PublicFeedHeader({ onNewLinkClick }: PublicFeedHeaderProps) {
         </div> */}
       </div>
     </div>
-  )
+  );
 }
-

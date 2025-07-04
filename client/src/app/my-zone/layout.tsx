@@ -9,7 +9,7 @@ import { UserProvider } from "@/contexts/userContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LinkSlam",
+  title: "LinkSlam - My Zone",
   description: "Your ultimate bookmarking platform.",
 };
 

@@ -4,13 +4,15 @@ import authRoutes from './routes/authRoutes.js';
 import googleAuthRoutes from './routes/authGoogle.js';
 import linkRoutes from './routes/linkRoutes.js';
 import publicLinkRoutes from './routes/publicLinkRoutes.js';
-import {authMiddleware} from './middlewares/authMiddleware.js';
+import userRoutes from "./routes/userRoutes.js";
+// import {authMiddleware} from './middlewares/authMiddleware.js';
 import cookieParser from 'cookie-parser';
 import session from "express-session";
 import passport from "passport";
 import "./config/passport.js"; 
 import dotenv from "dotenv";
-import { getPublicFeedLinks } from './controllers/publicLinkController.js';
+
+
 dotenv.config();
 
 const app = express();
@@ -56,6 +58,7 @@ app.use('/link', linkRoutes);
 
 app.use('/public', publicLinkRoutes); // Public feed route
 
+app.use('/users', userRoutes);
 // app.use(authMiddleware); // Apply auth middleware globally
 
 

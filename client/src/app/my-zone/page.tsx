@@ -6,12 +6,32 @@ import { MySlamZoneHeader } from "@/components/my-slam-zone-header";
 import { LinkCard, type LinkItem } from "@/components/link-card";
 import { LinkFormModal } from "@/components/link-form-modal";
 import { userLinksService } from "@/services/userLinksService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MySlamZonePage() {
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
   const [filter, setFilter] = useState<"all" | "public" | "private">("private");
+  const [topTags, setTopTags] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  // A skeleton component that mimics the layout of your LinkCard
+  const LinkCardSkeleton = () => (
+    <div className="flex flex-col space-y-4 p-4 bg-card border border-zinc-800 rounded-lg mb-4">
+      <Skeleton className="h-5 w-3/4 bg-zinc-700" />
+      <Skeleton className="h-4 w-1/2 bg-zinc-700" />
+      <div className="flex gap-2 pt-2">
+        <Skeleton className="h-6 w-16 rounded-full bg-zinc-700" />
+        <Skeleton className="h-6 w-20 rounded-full bg-zinc-700" />
+      </div>
+      <div className="flex justify-end gap-2 pt-2">
+        <Skeleton className="h-8 w-8 rounded-md bg-zinc-700" />
+        <Skeleton className="h-8 w-8 rounded-md bg-zinc-700" />
+      </div>
+    </div>
+  );
 
   const handleNewLinkClick = () => {
     setEditingLink(null); // Clear any previous editing data
@@ -105,13 +125,12 @@ export default function MySlamZonePage() {
         if (!createdLink?._id) {
           console.error("No _id found in created link:", createdLink);
           toast.error("Failed to create link", {
-            description:
-              "Please check your input and try again.",
+            description: "Please check your input and try again.",
           });
           return;
         }
 
-        setLinks((prevLinks) => [...prevLinks, createdLink]);
+        setLinks((prevLinks) => [createdLink, ...prevLinks]);
         toast.success("Link created successfully", {
           description: "Your new link has been added to your Slam Zone.",
         });
@@ -157,6 +176,7 @@ export default function MySlamZonePage() {
   };
 
   const fetchLinks = async (type: "all" | "public" | "private") => {
+    setIsLoading(true);
     try {
       let response;
 
@@ -175,14 +195,16 @@ export default function MySlamZonePage() {
 
       if (response.links) {
         setLinks(response.links);
-        
+
         // Only show success toast if it's not the initial load
         // toast.success(...) // Remove this for cleaner UX
       } else {
         setLinks([]);
         // Keep the "no links found" toast as it's useful
         toast.info("No links found", {
-          description: `No ${type === 'all' ? '' : type + ' '}links in your Slam Zone yet. Create your first link!`,
+          description: `No ${
+            type === "all" ? "" : type + " "
+          }links in your Slam Zone yet. Create your first link!`,
         });
       }
     } catch (error: any) {
@@ -196,11 +218,65 @@ export default function MySlamZonePage() {
 
       // Set empty array as fallback
       setLinks([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = async (query: string) => {
+    setIsLoading(true);
+    try {
+      const res = await userLinksService.searchLinks(query, "");
+      console.log("Search response:", res);
+      
+      if (res.data.length == 0) {
+        toast.info(`No results for "${query}"`);
+        setLinks([]);
+      } else {
+        setLinks(res.data);
+      }
+    } catch (err: any) {
+      toast.error("Search failed", { description: err.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTagSearch = async (tag: string) => {
+    setIsLoading(true);
+    try {
+      const response = await userLinksService.searchLinks(undefined, tag);
+      console.log("Tag search response:", response);
+      if (response?.data?.length > 0) {
+        setLinks(response.data);
+      } else {
+        toast.info(`No results found for ${tag}`);
+        // setLinks([]);
+      }
+    } catch (error: any) {
+      toast.error("Tag search failed", {
+        description: error.response?.data?.message || error.message,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLinks(filter);
+    const fetchData = async () => {
+      await fetchLinks(filter);
+
+      try {
+        const tags = await userLinksService.getUserTopTags();
+        console.log("Fetched top tags:", tags);
+
+        setTopTags(tags);
+      } catch (err) {
+        console.error("Failed to fetch top tags:", err);
+      }
+    };
+
+    fetchData();
   }, [filter]);
 
   return (
@@ -209,15 +285,38 @@ export default function MySlamZonePage() {
         onNewLinkClick={handleNewLinkClick}
         currentFilter={filter}
         onFilterChange={(newFilter) => setFilter(newFilter)}
+        onTagClick={handleTagSearch}
+        topTags={topTags}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSearch={() => {
+          if (!searchQuery.trim()) {
+            fetchLinks(filter);
+          } else {
+            handleSearch(searchQuery);
+          }
+        }}
       />
       <main className="flex-1 overflow-auto p-4">
-          {links.length === 0 ? (
-         
+        {isLoading ? (
+          <Masonry
+            breakpointCols={breakpointCols}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {/* Render 8 skeleton cards for a good loading effect */}
+            {Array.from({ length: 8 }).map((_, index) => (
+              <LinkCardSkeleton key={index} />
+            ))}
+          </Masonry>
+        ) : links.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <h3 className="text-xl font-semibold text-zinc-300 mb-2">
-             Nothing here... yet.
+              Nothing here... yet.
             </h3>
-            <p className="text-zinc-500 mb-4">Make this space yours - Ready to drop your first banger? </p>
+            <p className="text-zinc-500 mb-4">
+              Make this space yours - Ready to drop your first banger?{" "}
+            </p>
             <button
               onClick={handleNewLinkClick}
               className="bg-red-primary hover:bg-red-500 hover:cursor-pointer text-white px-6 py-2 rounded-lg transition-colors"
@@ -226,21 +325,21 @@ export default function MySlamZonePage() {
             </button>
           </div>
         ) : (
-        <Masonry
-          breakpointCols={breakpointCols}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column"
-        >
-          {links.map((link) => (
-            <LinkCard
-              key={link._id}
-              link={link}
-              onEdit={handleEditLink}
-              onDelete={handleDeleteLink}
-              // isSaved={link.sourceId ? true : false} // Assuming sourceId indicates if it's saved
-            />
-          ))}
-        </Masonry>
+          <Masonry
+            breakpointCols={breakpointCols}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {links.map((link) => (
+              <LinkCard
+                key={link._id}
+                link={link}
+                onEdit={handleEditLink}
+                onDelete={handleDeleteLink}
+                // isSaved={link.sourceId ? true : false} // Assuming sourceId indicates if it's saved
+              />
+            ))}
+          </Masonry>
         )}
       </main>
 

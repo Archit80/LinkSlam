@@ -51,4 +51,15 @@ export const publicLinksService = {
       return error;
     }
   },
+
+  searchLinks: async (q: string, tag: string) => {
+    return await api.get("/search", {
+      params: {
+        q,
+        tag,
+      },
+    });
+  },
+
+
 };

@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Mail, Lock, User, Loader2 } from "lucide-react"
+import { Mail, Lock, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { authService } from "@/services/authService" // Adjust the import based on your auth service location
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 
 export default function LoginPage() {
@@ -18,7 +19,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [username, setUsername] = useState("")
+  // const [username, setUsername] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -61,15 +62,17 @@ export default function LoginPage() {
         setError("Password must be at least 8 characters long.")
       } else {
         try{
+            toast.loading("Creating your account...");
             const response = await authService.signup({
                 email,
                 password,
-                name : username
             })
             // console.log(response);
             if (response.status === 201) {
-                console.log("Signup successful!")
-                router.replace("/public/feed") 
+                toast.dismiss();
+                console.log("Signup successful!");
+                toast.success("Account created successfully!");
+                router.replace("/auth/onboarding") ;
             } else {
                 setError(response.data.message || "Signup failed. Please try again.")
             }
@@ -114,7 +117,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-red-900/40 via-transparent to-transparent opacity-75" />
       <div className="absolute inset-0 z-0 bg-gradient-to-tl from-red-900/30 via-transparent to-transparent opacity-55" />
 
-      <Card className="w-full max-w-md bg-card border-zinc-800 text-foreground shadow-lg relative z-10">
+      <Card className="w-full max-w-md bg-card/40 border-zinc-800 text-foreground shadow-lg relative z-10">
         <CardHeader className="pb-4 border-b border-zinc-800 text-center">
           <CardTitle className="text-red-primary text-3xl font-bold">
             {isLogin ? "Welcome Back!" : "Join LinkSlam!"}
@@ -131,7 +134,7 @@ export default function LoginPage() {
                 <Button
                   variant="link"
                   onClick={() => setIsLogin(false)}
-                  className="p-0 h-auto text-red-400 hover:text-red-500"
+                  className="p-0 h-auto text-red-400 hover:text-red-500 hover:cursor-pointer"
                 >
                   Sign Up
                 </Button>
@@ -142,7 +145,7 @@ export default function LoginPage() {
                 <Button
                   variant="link"
                   onClick={() => setIsLogin(true)}
-                  className="p-0 h-auto text-red-400 hover:text-red-500"
+                  className="p-0 h-auto text-red-400 hover:text-red-500 hover:cursor-pointer"
                 >
                   Login
                 </Button>
@@ -151,7 +154,7 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+            {/* {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <div className="relative">
@@ -167,7 +170,7 @@ export default function LoginPage() {
                   />
                 </div>
               </div>
-            )}
+            )} */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -242,7 +245,7 @@ export default function LoginPage() {
               <span className="w-full border-t border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-zinc-500">Or continue with</span>
+              <span className="bg-[#121110] px-2 text-zinc-500">Or continue with</span>
             </div>
           </div>
 

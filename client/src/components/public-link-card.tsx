@@ -24,7 +24,7 @@ import { log } from "console";
 
 
 export interface LinkItem {
-  id: string;
+  _id: string;
   title: string;
   url: string;
   tags: string[];
@@ -32,6 +32,9 @@ export interface LinkItem {
   isNSFW: boolean;
   previewImage?: string; // Optional property for preview image URL
   likes?: string[];  
+  saves?: string[];
+  userId: string;
+  // userId: string;
 }
 
 interface LinkCardProps {
@@ -83,7 +86,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
 
   const handleLike = async () => {
     try {
-      const response = await publicLinksService.toggleLikeLink(link.id);
+      const response = await publicLinksService.toggleLikeLink(link._id);
       console.log("Toggle like response:", response);
       
       if (response.success) {
@@ -99,7 +102,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
 
   const handleSave = async () => {
     try {
-      const response = await publicLinksService.toggleSaveLink(link.id);
+      const response = await publicLinksService.toggleSaveLink(link._id);
       console.log("Toggle save response:", response);
       if(response.success) {
         setIsSaved(!isSaved);
@@ -212,7 +215,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onDelete(link.id)}
+                  onClick={() => onDelete(link._id)}
                   className="cursor-pointer text-red-400 hover:bg-zinc-800 hover:text-red-400"
                 >
                   Delete
@@ -254,7 +257,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
                 variant="ghost"
                 size="sm"
                 onClick={handleLike}
-                className={`flex items-center gap-1 h-8 px-2 hover:bg-card transition-colors ${
+                className={`flex items-center gap-1 h-8 px-2 hover:bg-card hover:cursor-pointer transition-colors ${
                   isLiked
                     ? "text-red-400"
                     : "text-muted-foreground hover:text-red-400"
@@ -268,7 +271,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
                 variant="ghost"
                 size="sm"
                 onClick={handleSave}
-                className={`h-8 w-8 p-0 hover:bg-zinc-700 transition-colors ${
+                className={`h-8 w-8 p-0 hover:bg-zinc-700 transition-colors hover:cursor-pointer ${
                   isSaved
                     ? "text-white"
                     : "text-muted-foreground hover:text-white"

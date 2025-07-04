@@ -3,19 +3,29 @@
 import Masonry from "react-masonry-css";
 import { PublicFeedHeader } from "@/components/public-feed-header";
 import { LinkCard } from "@/components/public-link-card";
-import type { LinkItem } from "@/components/link-card";
+import type { LinkItem } from "@/components/public-link-card";
 import { Plus } from "lucide-react";
 import { LinkFormModal } from "@/components/link-form-modal";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { publicLinksService } from "@/services/publicLinksService";
 import { toast } from "sonner";
 import { useUser } from "@/contexts/userContext";
+import { searchUsers } from "@/services/userServices";
+import debounce from "lodash.debounce";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicFeedPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
   const [publicLinks, setPublicLinks] = useState<LinkItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [query, setQuery] = useState("");
+
+  const [searchType, setSearchType] = useState<"links" | "users">("links");
+  // const [searchedUsers, setSearchedUsers] = useState<any[]>([]);
+
+  const [userSearchResults, setUserSearchResults] = useState<any[]>([]);
+  const [showUserSuggestions, setShowUserSuggestions] = useState(false);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -23,6 +33,25 @@ export default function PublicFeedPage() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const { user } = useUser();
+
+  const PublicLinkCardSkeleton = () => (
+    <div className="flex flex-col space-y-3 p-4 bg-card border border-zinc-800 rounded-lg mb-4 break-inside-avoid">
+      {/* User Info */}
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-8 w-8 rounded-full bg-zinc-700" />
+        <Skeleton className="h-4 w-28 bg-zinc-700" />
+      </div>
+      {/* Title */}
+      <Skeleton className="h-5 w-3/4 bg-zinc-700" />
+      {/* URL */}
+      <Skeleton className="h-4 w-1/2 bg-zinc-700" />
+      {/* Tags */}
+      <div className="flex gap-2 pt-2">
+        <Skeleton className="h-6 w-16 rounded-full bg-zinc-700" />
+        <Skeleton className="h-6 w-20 rounded-full bg-zinc-700" />
+      </div>
+    </div>
+  );
 
   const handleNewLinkClick = () => {
     setEditingLink(null);
@@ -118,6 +147,78 @@ export default function PublicFeedPage() {
     }
   };
 
+  const handleSearch = useCallback(async () => {
+    if (searchType === "users") {
+      if (!query.trim()) {
+        setUserSearchResults([]);
+        setShowUserSuggestions(false);
+        return;
+      }
+      try {
+        const res = await searchUsers(query);
+        console.log("User search results:", res);
+        setUserSearchResults(res);
+        setShowUserSuggestions(true);
+      } catch (err) {
+        showServerErrorToast("User search failed", err);
+      }
+    } else {
+      try {
+        setIsLoading(true);
+        const res = query.trim()
+          ? await publicLinksService.searchLinks(query, "")
+          : await publicLinksService.getPublicFeedLinks(1); // fetch all
+
+        setPublicLinks(res.data || res.links || []);
+        setHasMore(!query); // only enable pagination if showing full feed
+      } catch (err) {
+        showServerErrorToast("Search failed", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [searchType, query, setUserSearchResults, setShowUserSuggestions, setIsLoading, setPublicLinks, setHasMore]);
+
+  const latestQuery = useRef(query);
+  const latestSearchType = useRef(searchType);
+
+  useEffect(() => {
+    latestQuery.current = query;
+  }, [query]);
+
+  useEffect(() => {
+    latestSearchType.current = searchType;
+  }, [searchType]);
+
+  const debouncedUserSearch = useMemo(() => {
+    return debounce(() => {
+      if (latestSearchType.current === "users" && latestQuery.current.trim()) {
+        handleSearch();
+      }
+    }, 500);
+  }, [handleSearch]);
+
+  const handleTagSearch = async (tag: string) => {
+    try {
+      setIsLoading(true);
+      const res = await publicLinksService.searchLinks(undefined, tag);
+      console.log("Search results for tag:", tag, res);
+
+      if (res.data && res.data.length === 0) {
+        toast.info(`No links found for tag: ${tag}`, {
+          description: "Try searching with a different tag.",
+        });
+      } else {
+        setPublicLinks(res.data || res.links);
+      }
+      setHasMore(false); // disable pagination during search
+    } catch (err) {
+      showServerErrorToast("Failed to search by tag", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const breakpointCols = {
     default: 4,
     1100: 3,
@@ -128,12 +229,31 @@ export default function PublicFeedPage() {
   return (
     <div className="dark flex flex-col h-full w-full bg-background text-foreground">
       <main className="dark flex-1 overflow-auto p-4 relative">
-        <PublicFeedHeader onNewLinkClick={handleNewLinkClick} />
+        <PublicFeedHeader
+          onNewLinkClick={handleNewLinkClick}
+          onTagClick={handleTagSearch}
+          query={query}
+          setQuery={setQuery}
+          onSearch={handleSearch}
+          searchType={searchType}
+          setSearchType={setSearchType}
+          userSearchResults={userSearchResults}
+          setUserSearchResults={setUserSearchResults}
+          showUserSuggestions={showUserSuggestions}
+          setShowUserSuggestions={setShowUserSuggestions}
+            onDebouncedInput={debouncedUserSearch}
+        />
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-zinc-400">Loading public feed...</div>
-          </div>
+          <Masonry
+            breakpointCols={breakpointCols}
+            className="dark py-4 my-masonry-grid bg-background"
+            columnClassName="dark my-masonry-grid_column"
+          >
+            {Array.from({ length: 8 }).map((_, index) => (
+              <PublicLinkCardSkeleton key={index} />
+            ))}
+          </Masonry>
         ) : publicLinks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <h3 className="text-xl font-semibold text-zinc-300 mb-2">
@@ -154,7 +274,7 @@ export default function PublicFeedPage() {
               className="dark py-4 my-masonry-grid bg-background"
               columnClassName="dark my-masonry-grid_column"
             >
-              {publicLinks.map((link) => {
+              {publicLinks.map((link: LinkItem) => {
                 if (!link || !link._id) {
                   console.warn("Invalid link found:", link);
                   return null;
@@ -167,7 +287,7 @@ export default function PublicFeedPage() {
                     key={link._id}
                     link={{
                       ...link,
-                      id: link._id,
+                      _id: link._id,
                       isPrivate: false,
                     }}
                     onEdit={() => {}}
@@ -175,7 +295,10 @@ export default function PublicFeedPage() {
                     isPublicFeed={true}
                     slammedBy={{
                       id: link.userId?._id || link.userId || "unknown",
-                      username: link.userId?.name || "Unknown User",
+                      username:
+                        link.userId?.username ||
+                        link.userId?.name ||
+                        "Unknown User",
                     }}
                     isLiked={isLiked}
                     isSaved={isSaved}
@@ -214,23 +337,23 @@ export default function PublicFeedPage() {
 
         <button
           onClick={handleNewLinkClick}
-          className="dark flex hover:cursor-pointer fixed gap-2 border-2 border-white/60 bottom-6 right-10 bg-red-500 text-white p-4 rounded-full z-50 
+          className="dark flex items-center justify-center hover:cursor-pointer fixed gap-2 border-2 border-white/60 
+            bottom-16 md:bottom-10 right-6 md:right-10 
+            bg-red-500 text-white p-3 sm:p-4 rounded-full z-50 
             hover:shadow-[0_0_8px_2px_rgba(239,68,68,0.8)] 
             transition-all duration-200"
         >
-          <Plus className="dark h-6 w-6" />
-          Slam A Link
+          <Plus className="dark h-5 w-5 sm:h-6 sm:w-6" />
+          <span className="hidden sm:inline">Slam A Link</span>
         </button>
       </main>
 
       <LinkFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSaveLink}
+        onSave={handleSaveLink}
         initialData={editingLink}
-        fromPublicFeed={true}
       />
-      
     </div>
   );
 }

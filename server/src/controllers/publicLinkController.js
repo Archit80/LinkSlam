@@ -7,7 +7,7 @@ export const getPublicFeedLinks = async (req, res) => {
 
   try {
     const publicLinks = await Link.find({ isPublic: true })
-      .populate("userId", "name email")
+      .populate("userId", "name email username")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
@@ -19,7 +19,7 @@ export const getPublicFeedLinks = async (req, res) => {
       links: publicLinks,
       total: totalCount,
       page: Number(page),
-      hasMore: (page * limit) < totalCount,
+      hasMore: page * limit < totalCount,
     });
   } catch (error) {
     console.error("Error fetching public feed links:", error);
@@ -29,7 +29,6 @@ export const getPublicFeedLinks = async (req, res) => {
     });
   }
 };
-
 
 export const createPublicLink = async (req, res) => {
   // Ensure the user is authenticated
@@ -211,3 +210,39 @@ export const toggleSaveLink = async (req, res) => {
     });
   }
 };
+
+export const searchLinks = async (req, res) => {
+  const { q, tag } = req.query;
+  if ((!q || q.trim() === "") && (!tag || tag.trim() === "")) {
+    return res.status(400).json({ message: "Search query is required." });
+  }
+
+  const query = { isPublic: true };
+  const orConditions = [];
+
+  if (q && q.trim()) {
+    const regex = new RegExp(q.trim(), "i");
+    orConditions.push(
+      { title: regex },
+      { url: regex },
+      { tags: { $in: [regex] } }
+    );
+  }
+
+  if (tag && tag.trim()) {
+    const tagRegex = new RegExp(tag.trim(), "i");
+    orConditions.push({ tags: { $in: [tagRegex] } });
+  }
+
+  if (orConditions.length > 0) {
+    query.$or = orConditions;
+  }
+  try {
+    const links = await Link.find(query).limit(20);
+    res.status(200).json(links);
+  } catch (err) {
+    console.error("Search failed:", err);
+    res.status(500).json({ message: "Search failed", error: err.message });
+  }
+};
+

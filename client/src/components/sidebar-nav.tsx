@@ -1,10 +1,11 @@
-"use client"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, Globe, Settings, FlameIcon, LogOut } from "lucide-react"
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Globe, FlameIcon, LogOut, User2 } from "lucide-react";
+import { useState, useEffect } from "react"; // Import useState and useEffect
 
-import { useIsMobile } from "@/hooks/use-mobile"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -25,33 +26,35 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { authService } from "@/services/authService"
-import { useRouter } from "next/navigation"
-import { useUser } from "@/contexts/userContext"
+} from "@/components/ui/sidebar";
+import { authService } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/contexts/userContext";
 
 export function SidebarNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
   const { user, loading } = useUser();
+  const isMobile = useIsMobile();
+  const router = useRouter();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const userData = {
     name: user?.name || "LinkSlam User",
     email: user?.email || "user@linkslam.com",
-  }
-
-  const isMobile = useIsMobile()
-  const router = useRouter();
+    image: user?.profileImage?.url || "/placeholder.svg",
+  };
 
   const handleLogout = async () => {
     const response = await authService.logout();
-    console.log("Logout response:", response);
     if (response.status === 200) {
-      console.log("User logged out");
       router.replace("/");
     }
-  }
+  };
 
-  // Simple navigation items - no sub-items
   const navMain = [
     {
       title: "Public Feed",
@@ -65,32 +68,110 @@ export function SidebarNav() {
       icon: Home,
       isActive: pathname === "/my-zone" || pathname === "/",
     },
-  ]
+  ];
 
-  if (loading) {
-    return <div className="flex dark bg-card items-center justify-center h-screen">Loading...</div>
+  if (!hasMounted || loading) {
+    return null;
   }
 
+  if (isMobile) {
+    return (
+      <>
+        {/* Bottom nav for mobile */}
+        <nav className="fixed dark bottom-0 left-0 right-0 z-50 flex justify-around items-center bg-card border-t border-zinc-700 py-2 px-4">
+          {navMain.map((item) => (
+            <Link
+              key={item.title}
+              href={item.url}
+              className={`flex flex-col items-center justify-center text-xs ${
+                item.isActive
+                  ? "text-red-500"
+                  : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <item.icon className="h-5 w-5 mb-1" />
+              {item.title}
+            </Link>
+          ))}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex dark flex-col items-center justify-center text-zinc-400 hover:text-zinc-200">
+                <Avatar className="h-6 w-6 mb-1">
+                  <AvatarImage src={userData.image} alt={userData.name} />
+                  <AvatarFallback>LS</AvatarFallback>
+                </Avatar>
+                <span className="text-xs">You</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="top"
+              align="center"
+              className="dark bg-card border border-zinc-700 min-w-[10rem]"
+            >
+              <DropdownMenuLabel>
+                <div className="flex dark items-center gap-2 px-1 py-1.5 text-zinc-100 text-left text-sm">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={userData.image} alt={userData.name} />
+                    <AvatarFallback>LS</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-medium truncate">
+                      {userData.name}
+                    </span>
+                    <span className="text-xs truncate">{userData.email}</span>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={`/profile/${user?._id}`}
+                    className="flex items-center gap-2 text-zinc-100"
+                  >
+                    <User2 className="h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-400">
+                <LogOut className="h-4 w-4 text-red-400" />
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </nav>
+      </>
+    );
+  }
+
+  // Desktop sidebar
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="bg-zinc-900 dark text-white">
-        <div className="flex gap-2 py-2 items-center shadow-none justify-start">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-red-500 flex-row">
+      <SidebarHeader className="bg-card dark text-white">
+        <div className="flex gap-2 py-2 items-center justify-start">
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-red-500">
             <FlameIcon className="size-6" />
           </div>
           <span className="truncate font-bold text-lg">LinkSlam</span>
         </div>
       </SidebarHeader>
-      
-      <SidebarContent className="bg-zinc-900 text-zinc-100">
+
+      <SidebarContent className="bg-card text-zinc-100">
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarMenu>
             {navMain.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild tooltip={item.title} isActive={item.isActive}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  isActive={item.isActive}
+                >
                   <Link href={item.url}>
-                    {item.icon && <item.icon />}
+                    <item.icon />
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -100,56 +181,63 @@ export function SidebarNav() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="text-zinc-100 bg-zinc-900">
+      <SidebarFooter className="text-zinc-100 bg-card ">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="dark data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
+                <SidebarMenuButton size="lg">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={userData.avatar || "/placeholder.svg"} alt={userData.name} />
-                    <AvatarFallback className="rounded-lg">LS</AvatarFallback>
+                    <AvatarImage src={userData.image} alt={userData.name} />
+                    <AvatarFallback>LS</AvatarFallback>
                   </Avatar>
-                  <div className="grid dark flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{userData.name}</span>
+                  <div className="grid flex-1 text-left text-sm hover:cursor-pointer">
+                    <span className="truncate font-semibold">
+                      {userData.name}
+                    </span>
                     <span className="truncate text-xs">{userData.email}</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="border-zinc-500 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg dark bg-card"
-                side={isMobile ? "bottom" : "right"}
+                side="right"
                 align="end"
                 sideOffset={4}
+                className="dark bg-card min-w-56 border-zinc-500"
               >
-                <DropdownMenuLabel className="p-0 font-normal dark bg-card">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-zinc-100 text-left text-sm">
+                <DropdownMenuLabel>
+                  <div className="flex  items-center gap-2 px-1 py-1.5 text-zinc-100 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={userData.avatar || "/placeholder.svg"} alt={userData.name} />
-                      <AvatarFallback className="rounded-lg">SU</AvatarFallback>
+                      <AvatarImage src={userData.image} alt={userData.name} />
+                      <AvatarFallback>LS</AvatarFallback>
                     </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{userData.name}</span>
+                    <div className="flex flex-col text-left text-sm">
+                      <span className="truncate font-semibold">
+                        {userData.name}
+                      </span>
                       <span className="truncate text-xs">{userData.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup className="dark">
-                  <DropdownMenuItem className="dark bg-card text-zinc-100">
-                    <Link href={`/profile/${user?._id}`} className="flex items-center gap-2">
-                      <Settings className="mr-2 h-4 w-4 dark text-zinc-200" />
-                      <span className="text-zinc-100">Settings</span>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/profile/${user?._id}`}
+                      className="flex items-center gap-2 hover:cursor-pointer text-zinc-100"
+                    >
+                      <User2 className="h-4 w-4" />
+                      Profile
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="hover:text-red-primary dark bg-card dark hover:cursor-pointer" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4 text-zinc-100 hover:text-red-primary" />
-                  <span className="text-zinc-100">Log out</span>
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-zinc-100 hover:text-red-400 hover:cursor-pointer "
+                >
+                  <LogOut className="h-4 w-4 text-red-400" />
+                  Log Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -158,7 +246,7 @@ export function SidebarNav() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
 
-export default SidebarNav
+export default SidebarNav;

@@ -1,14 +1,15 @@
 // "use client"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { SidebarNav } from "@/components/sidebar-nav";
+
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LinkSlam - Public Feed",
+  title: "LinkSlam - Profile",
   description: "Discover and share links with the community.",
 };
 
-export default function PublicFeedLayout({
+export default function ProfilePageLayout({
   children,
 }: {
   children: React.ReactNode;
