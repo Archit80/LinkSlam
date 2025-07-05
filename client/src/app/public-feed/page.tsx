@@ -4,15 +4,26 @@ import Masonry from "react-masonry-css";
 import { PublicFeedHeader } from "@/components/public-feed-header";
 import { LinkCard } from "@/components/public-link-card";
 import type { LinkItem } from "@/components/public-link-card";
+import type { LinkItem as ModalLinkItem } from "@/components/link-card";
 import { Plus } from "lucide-react";
 import { LinkFormModal } from "@/components/link-form-modal";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { publicLinksService } from "@/services/publicLinksService";
 import { toast } from "sonner";
 import { useUser } from "@/contexts/userContext";
+import type { User } from "@/contexts/userContext";
 import { searchUsers } from "@/services/userServices";
-import debounce from "lodash.debounce";
 import { Skeleton } from "@/components/ui/skeleton";
+// import type { User } from "@/types/user"; // Adjust the import path as needed
+
+// Custom debounce function to avoid lodash.debounce type issues
+function debounce<T extends (...args: unknown[]) => unknown>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 const PAGE_LIMIT = 12;
 
@@ -61,7 +72,11 @@ export default function PublicFeedPage() {
 
   const showServerErrorToast = (title: string, error: unknown) => {
     const apiErrorMessage =
-      (error as any)?.response?.data?.message || (error as Error)?.message;
+      error && typeof error === 'object' && 'response' in error && 
+      error.response && typeof error.response === 'object' && 'data' in error.response &&
+      error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+        ? String(error.response.data.message)
+        : error instanceof Error ? error.message : null;
     toast.error(title, {
       description: apiErrorMessage || "Unable to complete request. Please try again.",
     });
@@ -76,7 +91,7 @@ export default function PublicFeedPage() {
         setPublicLinks(res.links || res.data || []);
         setHasMore(res.hasMore);
         setPage(2);
-      } catch (error: any) {
+      } catch (error: unknown) {
         showServerErrorToast("Failed to load public feed", error);
         setPublicLinks([]);
       } finally {
@@ -156,6 +171,13 @@ export default function PublicFeedPage() {
     }
   };
 
+  // Wrapper function to match LinkFormModal's expected onSubmit signature
+  const handleModalSubmit = (link: ModalLinkItem) => {
+    // Remove _id to match handleSaveLink signature, and ensure isPrivate is set to false for public feed
+    const { ...linkData } = link;
+    handleSaveLink({ ...linkData, isPrivate: false });
+  };
+
   const handleSearch = useCallback(async () => {
     if (searchType === "users") {
       if (!query.trim()) {
@@ -211,7 +233,7 @@ export default function PublicFeedPage() {
   const handleTagSearch = async (tag: string) => {
     try {
       setIsLoading(true);
-      const res = await publicLinksService.searchLinks(undefined, tag);
+      const res = await publicLinksService.searchLinks("", tag);
       console.log("Search results for tag:", tag, res);
 
       if (res.data && res.data.length === 0) {
@@ -240,7 +262,6 @@ export default function PublicFeedPage() {
     <div className="dark flex flex-col h-full w-full bg-background text-foreground">
       <main className="dark flex-1 overflow-auto p-4 relative">
         <PublicFeedHeader
-          onNewLinkClick={handleNewLinkClick}
           onTagClick={handleTagSearch}
           query={query}
           setQuery={setQuery}
@@ -291,7 +312,11 @@ export default function PublicFeedPage() {
                 }
                 const isLiked = user?.likedLinks?.includes(link._id);
                 const isSaved = user?.savedLinks?.includes(link._id);
-                const isMine = user?._id === (link.userId?._id || link.userId);
+                const isMine = user && user._id
+                  ? user._id === (typeof link.userId === "object" && link.userId !== null && "_id" in link.userId
+                      ? (link.userId as { _id: string })._id
+                      : link.userId)
+                  : false;
                 return (
                   <LinkCard
                     key={link._id}
@@ -304,11 +329,16 @@ export default function PublicFeedPage() {
                     onDelete={() => {}}
                     isPublicFeed={true}
                     slammedBy={{
-                      id: link.userId?._id || link.userId || "unknown",
-                      username:
-                        link.userId?.username ||
-                        link.userId?.name ||
-                        "Unknown User",
+                      id: typeof link.userId === "object" && link.userId !== null && "_id" in link.userId
+                        ? (link.userId as { _id: string })._id
+                        : typeof link.userId === "string" 
+                        ? link.userId 
+                        : "unknown",
+                      username: typeof link.userId === "object" && link.userId !== null && "username" in link.userId
+                        ? (link.userId as { username?: string; name?: string }).username ||
+                          (link.userId as { username?: string; name?: string }).name ||
+                          "Unknown User"
+                        : "Unknown User",
                     }}
                     isLiked={isLiked}
                     isSaved={isSaved}
@@ -361,10 +391,9 @@ export default function PublicFeedPage() {
       <LinkFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveLink}
-        initialData={editingLink}
+        onSubmit={handleModalSubmit}
+        initialData={editingLink ? { ...editingLink, isPublic: true } : null}
         fromPublicFeed={true}
-        onSubmit={handleSaveLink}
       />
     </div>
   );

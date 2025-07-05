@@ -107,9 +107,9 @@ export function PublicFeedHeader({
   );
 
   // Use prop state if available, otherwise use local state
-  const currentSearchType = setSearchType ? searchType : localSearchType;
+  const currentSearchType = typeof searchType !== "undefined" ? searchType : localSearchType;
   const handleSearchTypeChange = (type: "links" | "users") => {
-    if (setSearchType) {
+    if (typeof setSearchType === "function") {
       setSearchType(type);
     } else {
       setLocalSearchType(type);

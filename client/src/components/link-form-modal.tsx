@@ -97,13 +97,14 @@ export function LinkFormModal({
     const newLink: LinkItem =
       initialData && initialData._id
         ? {
-            // Editing existing link - include _id
+            // Editing existing link - include _id and preserve userId
             _id: initialData._id,
             title,
             url: validatedUrl,
             tags,
             isPublic: !isPrivate,
             isNSFW,
+            userId: initialData.userId, // Preserve existing userId
           }
         : ({
             // Creating new link - don't include _id, let server generate it
@@ -112,6 +113,7 @@ export function LinkFormModal({
             tags,
             isPublic: !isPrivate,
             isNSFW,
+            userId: "", // Will be set by server based on authenticated user
           } as LinkItem); // Type assertion since _id is required in LinkItem but server will add it
 
     await onSubmit(newLink);

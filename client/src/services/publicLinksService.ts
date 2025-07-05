@@ -22,7 +22,7 @@ export const publicLinksService = {
     }
   },
 
-  createPublicLink: async (linkData) => {
+  createPublicLink: async (linkData: object) => {
     try {
       const response = await api.post(`/create`, linkData);
       return response.data;
