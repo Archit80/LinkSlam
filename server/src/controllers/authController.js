@@ -166,7 +166,14 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    return res.status(200).clearCookie("token").json({ message: "Logged out" });
+    return res
+      .status(200)
+      .clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None", // Add this for consistency
+      })
+      .json({ message: "Logged out" });
   } catch (error) {
     return res.status(500).json({ message: "Logout error", error });
   }
