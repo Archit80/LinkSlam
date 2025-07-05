@@ -36,13 +36,13 @@ app.use(
 //   next();
 // });
 
-app.options(
-  "*",
-  cors({
-    origin: "https://link-slam.vercel.app",
-    credentials: true,
-  })
-);
+// app.options(
+//   "*",
+//   cors({
+//     origin: "https://link-slam.vercel.app",
+//     credentials: true,
+//   })
+// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -63,9 +63,8 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.use("/auth", authRoutes);
-// app.use('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.use("/auth/google", googleAuthRoutes);
+app.use("/auth", authRoutes);
 
 app.use("/link", linkRoutes);
 
