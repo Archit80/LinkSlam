@@ -6,7 +6,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   // const { user } = useUser();
-  const protectedPaths = ['/my-zone', 'public-feed']  
+  const protectedPaths = ['/my-zone', '/public-feed']  
   const isProtected = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   ) 
@@ -35,6 +35,9 @@ export const config = {
     '/my-zone',
      '/auth/:path*',   
     '/my-zone/:path*',
-    '/'
+    '/',
+    '/public-feed',
+    '/auth/onboarding',
+    
     ],
 }

@@ -252,3 +252,25 @@ html {
   right: 1rem !important;
   left: unset !important;
 }
+
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1c1c1c; /* dark track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ab0635; /* thumb color */
+  border-radius: 6px;
+  border: 2px solid #1c1c1c; /* padding around thumb */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ab0635 #1c1c1c;
+}

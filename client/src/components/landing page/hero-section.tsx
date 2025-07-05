@@ -39,9 +39,9 @@ export default function HeroSection() {
   const line3 = `Discover. Save. Slam.`;
 
   return (
-    <section className="w-full py-12 md:py-24 mt-2 bg-[#060606] text-white">
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col w-full lg:flex-row gap-4 items-center">
+    <section className="w-full py-12 px-2 md:px-0 md:py-24 mt-2 bg-[#060606] text-white">
+      <div className="container px-4 text-center md:px-6">
+        <div className="flex flex-col text-center w-full lg:flex-row gap-4 items-center">
           {/* Left content: animate from left */}
           <motion.div
             initial={{ x: -80, opacity: 0 }}
@@ -158,6 +158,7 @@ export default function HeroSection() {
             }}
             className="drop-shadow-xl"
           >
+
             <Image
               src="/logo.png"
               width={650}

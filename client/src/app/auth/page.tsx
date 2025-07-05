@@ -130,7 +130,7 @@ export default function LoginPage() {
           <div className="flex items-center justify-center mb-6">
             {isLogin ? (
               <p className="text-sm text-zinc-400">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Button
                   variant="link"
                   onClick={() => setIsLogin(false)}
@@ -178,6 +178,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
+                  name ="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -193,6 +194,7 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type="password"
+                  name="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -223,7 +225,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-red-500 text-red-500-foreground hover:bg-red-400 transition-colors"
+              className="w-full bg-red-500 text-red-500-foreground hover:bg-red-400 transition-colors hover:cursor-pointer "
               disabled={loading}
               
             >

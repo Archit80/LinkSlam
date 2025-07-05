@@ -353,6 +353,8 @@ export default function PublicFeedPage() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveLink}
         initialData={editingLink}
+        fromPublicFeed={true}
+        onSubmit={handleSaveLink}
       />
     </div>
   );

@@ -9,7 +9,7 @@ export default function CommunityPunchlineSection() {
           Where your links actually belong.
         </h2>
         <p className="max-w-[800px] mx-auto text-lg md:text-xl text-gray-300 mb-8">
-          Built with care, curiosity, and way too many open tabs. I'm crafting this project to
+          Built with care, curiosity, and way too many open tabs. I&apos;m crafting this project to
 rethink how we collect and revisit the links that actually stick.
         </p>
         <div className="flex justify-center space-x-6">
