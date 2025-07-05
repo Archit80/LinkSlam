@@ -89,7 +89,7 @@ export const updateProfile = async (req, res) => {
       { new: true, runValidators: true }
     ).select("-password");
 
-    console.log("Updated User:", updatedUser);
+    // console.log("Updated User:", updatedUser);
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
