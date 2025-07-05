@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-export async function POST(request: Request) {
-  try {
-    // Pass along the original request's cookies to the backend
-    const cookieHeader = request.headers.get("Cookie") || "";
+export async function POST() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+  const cookieHeader = token ? `token=${token.value}` : "";
 
+  try {
     const apiResponse = await fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       headers: {
