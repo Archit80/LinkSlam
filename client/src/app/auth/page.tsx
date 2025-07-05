@@ -49,9 +49,15 @@ export default function LoginPage() {
         } else {
           setError(response.data || "Login failed. Please try again.")
         }
-       } catch (error) {
+       } catch (error: unknown) {
         console.error("Login error:", error)
-        setError(`${error.response?.data?.message}`)
+        const errorMessage = 
+          error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 'data' in error.response &&
+          error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+            ? String(error.response.data.message)
+            : "Login failed. Please try again.";
+        setError(errorMessage)
        }
        
     } else {
@@ -104,9 +110,15 @@ export default function LoginPage() {
     //   } else {
     //     setError(response.data || "Google login failed. Please try again.")
     //   }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Google login error:", error)
-      setError(`${error.response?.data?.message}`)
+      const errorMessage = 
+        error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+          ? String(error.response.data.message)
+          : "Google login failed. Please try again.";
+      setError(errorMessage)
     }
 
   }

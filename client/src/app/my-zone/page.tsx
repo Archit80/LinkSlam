@@ -68,11 +68,13 @@ export default function MySlamZonePage() {
             "The server returned an unexpected response. Please try again.",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "An unexpected error occurred";
+        error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+          ? String(error.response.data.message)
+          : error instanceof Error ? error.message : "An unexpected error occurred";
       toast.error("Failed to delete link", {
         description: errorMessage,
       });
@@ -104,11 +106,13 @@ export default function MySlamZonePage() {
               "The server response was incomplete. Please try again.",
           });
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         const errorMessage =
-          error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred";
+          error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 'data' in error.response &&
+          error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+            ? String(error.response.data.message)
+            : error instanceof Error ? error.message : "An unexpected error occurred";
         toast.error("Failed to update link", {
           description: errorMessage,
         });
@@ -134,13 +138,15 @@ export default function MySlamZonePage() {
         toast.success("Link created successfully", {
           description: "Your new link has been added to your Slam Zone.",
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error creating link:", error);
 
         const errorMessage =
-          error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred";
+          error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 'data' in error.response &&
+          error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+            ? String(error.response.data.message)
+            : error instanceof Error ? error.message : "An unexpected error occurred";
 
         // More specific error messages based on common issues
         let description = `Error: ${errorMessage}`;
@@ -207,11 +213,13 @@ export default function MySlamZonePage() {
           }links in your Slam Zone yet. Create your first link!`,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "An unexpected error occurred";
+        error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+          ? String(error.response.data.message)
+          : error instanceof Error ? error.message : "An unexpected error occurred";
       toast.error("Failed to load links", {
         description: errorMessage,
       });
@@ -229,14 +237,19 @@ export default function MySlamZonePage() {
       const res = await userLinksService.searchLinks(query, "");
       console.log("Search response:", res);
       
-      if (res.data.length == 0) {
-        toast.info(`No results for "${query}"`);
-        setLinks([]);
+      if (res && typeof res === 'object' && 'data' in res && Array.isArray(res.data)) {
+        if (res.data.length === 0) {
+          toast.info(`No results for "${query}"`);
+          setLinks([]);
+        } else {
+          setLinks(res.data);
+        }
       } else {
-        setLinks(res.data);
+        setLinks([]);
       }
-    } catch (err: any) {
-      toast.error("Search failed", { description: err.message });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Search failed";
+      toast.error("Search failed", { description: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -247,15 +260,21 @@ export default function MySlamZonePage() {
     try {
       const response = await userLinksService.searchLinks(undefined, tag);
       console.log("Tag search response:", response);
-      if (response?.data?.length > 0) {
+      if (response && typeof response === 'object' && 'data' in response && Array.isArray(response.data) && response.data.length > 0) {
         setLinks(response.data);
       } else {
         toast.info(`No results found for ${tag}`);
         // setLinks([]);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+          ? String(error.response.data.message)
+          : error instanceof Error ? error.message : "Tag search failed";
       toast.error("Tag search failed", {
-        description: error.response?.data?.message || error.message,
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);

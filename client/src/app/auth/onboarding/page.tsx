@@ -101,7 +101,16 @@ export default function ProfileSettingsPage() {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error(`${error instanceof Error ? error.response.data.message : "Failed to update profile. Please try again."}`);
+      
+      // Handle API errors that may have a response property
+      const errorMessage = 
+        error && typeof error === 'object' && 'response' in error && 
+        error.response && typeof error.response === 'object' && 'data' in error.response &&
+        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+          ? String(error.response.data.message)
+          : "Failed to update profile. Please try again.";
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
