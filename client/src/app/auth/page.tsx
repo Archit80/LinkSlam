@@ -124,40 +124,40 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-background relative overflow-hidden">
+    <div className="dark flex min-h-screen items-center justify-center p-4 bg-background relative overflow-hidden">
       {/* Red gradient background */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-red-900/40 via-transparent to-transparent opacity-75" />
-      <div className="absolute inset-0 z-0 bg-gradient-to-tl from-red-900/30 via-transparent to-transparent opacity-55" />
+      <div className="dark absolute inset-0 z-0 bg-gradient-to-br from-red-900/40 via-transparent to-transparent opacity-75" />
+      <div className="dark absolute inset-0 z-0 bg-gradient-to-tl from-red-900/30 via-transparent to-transparent opacity-55" />a
 
-      <Card className="w-full max-w-md bg-card/40 border-zinc-800 text-foreground shadow-lg relative z-10">
-        <CardHeader className="pb-4 border-b border-zinc-800 text-center">
-          <CardTitle className="text-red-primary text-3xl font-bold">
+      <Card className="dark w-full max-w-md bg-card/40 border-zinc-800 text-foreground shadow-lg relative z-10">
+        <CardHeader className="dark pb-4 border-b border-zinc-800 text-center">
+          <CardTitle className="dark text-red-primary text-3xl font-bold">
             {isLogin ? "Welcome Back!" : "Join LinkSlam!"}
           </CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardDescription className="dark text-zinc-400">
             {isLogin ? "Sign in to your account" : "Create your account to get started"}
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-center mb-6">
+        <CardContent className="dark pt-6">
+          <div className="dark flex items-center justify-center mb-6">
             {isLogin ? (
-              <p className="text-sm text-zinc-400">
+              <p className="dark text-sm text-zinc-400">
                 Don&apos;t have an account?{" "}
                 <Button
                   variant="link"
                   onClick={() => setIsLogin(false)}
-                  className="p-0 h-auto text-red-400 hover:text-red-500 hover:cursor-pointer"
+                  className="dark p-0 h-auto text-red-400 hover:text-red-500 hover:cursor-pointer"
                 >
                   Sign Up
                 </Button>
               </p>
             ) : (
-              <p className="text-sm text-zinc-400">
+              <p className="dark text-sm text-zinc-400">
                 Already have an account?{" "}
                 <Button
                   variant="link"
                   onClick={() => setIsLogin(true)}
-                  className="p-0 h-auto text-red-400 hover:text-red-500 hover:cursor-pointer"
+                  className="dark p-0 h-auto text-red-400 hover:text-red-500 hover:cursor-pointer"
                 >
                   Login
                 </Button>
@@ -165,28 +165,28 @@ export default function LoginPage() {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="dark space-y-4">
             {/* {!isLogin && (
-              <div className="space-y-2">
+              <div className="dark space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="dark relative">
+                  <User className="dark absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="username"
                     type="text"
                     placeholder="Your username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className="dark pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                     required={!isLogin}
                   />
                 </div>
               </div>
             )} */}
-            <div className="space-y-2">
+            <div className="dark space-y-2">
               <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="dark relative">
+                <Mail className="dark absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -194,15 +194,15 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  className="dark pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   required
                 />
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="dark space-y-2">
               <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="dark relative">
+                <Lock className="dark absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type="password"
@@ -210,40 +210,40 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  className="dark pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   required
                 />
               </div>
             </div>
             {!isLogin && (
-              <div className="space-y-2">
+              <div className="dark space-y-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="dark relative">
+                  <Lock className="dark absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="confirm-password"
                     type="password"
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className="dark pl-9 bg-zinc-800 border-zinc-700 text-zinc-100 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                     required={!isLogin}
                   />
                 </div>
               </div>
             )}
 
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            {error && <p className="dark text-red-500 text-sm text-center">{error}</p>}
 
             <Button
               type="submit"
-              className="w-full bg-red-500 text-red-500-foreground hover:bg-red-400 transition-colors hover:cursor-pointer "
+              className="dark w-full bg-red-500 text-red-500-foreground hover:bg-red-400 transition-colors hover:cursor-pointer "
               disabled={loading}
               
             >
               {loading ? (
-                <span className="flex items-center justify-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span className="dark flex items-center justify-center">
+                  <Loader2 className="dark mr-2 h-4 w-4 animate-spin" />
                   {isLogin ? "Logging In..." : "Signing Up..."}
                 </span>
               ) : isLogin ? (
@@ -254,18 +254,18 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-zinc-800" />
+          <div className="dark relative my-6">
+            <div className="dark absolute inset-0 flex items-center">
+              <span className="dark w-full border-t border-zinc-800" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#121110] px-2 text-zinc-500">Or continue with</span>
+            <div className="dark relative flex justify-center text-xs uppercase">
+              <span className="dark bg-[#121110] px-2 text-zinc-500">Or continue with</span>
             </div>
           </div>
 
           <Button
             // variant="outline"
-            className="w-full bg-zinc-200 text-zinc-900 border-zinc-700 hover:bg-zinc-300 hover:cursor-pointer transition-colors"
+            className="dark w-full bg-zinc-200 text-zinc-900 border-zinc-700 hover:bg-zinc-300 hover:cursor-pointer transition-colors"
             onClick={handleGoogleLogin}
             disabled={loading}
           >
@@ -275,13 +275,13 @@ export default function LoginPage() {
           </Button>
           
 
-          <p className="text-center text-sm text-zinc-500 mt-6">
+          <p className="dark text-center text-sm text-zinc-500 mt-6">
             By {isLogin ? "logging in" : "signing up"}, you agree to our{" "}
-            <Link href="#" className="text-red-400 hover:underline">
+            <Link href="#" className="dark text-red-400 hover:underline">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="#" className="text-red-400 hover:underline">
+            <Link href="#" className="dark text-red-400 hover:underline">
               Privacy Policy
             </Link>
             .
