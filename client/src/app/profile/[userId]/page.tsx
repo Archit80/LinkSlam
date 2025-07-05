@@ -1,5 +1,9 @@
 import ClientProfilePage from "./ClientProfilePage";
 
-export default function ServerProfilePage({ params }: { params: { userId: string } }) {
+type Props = {
+  params: { userId: string }; 
+};
+
+export default function ProfilePage({ params }: Props) {
   return <ClientProfilePage userId={params.userId} />;
 }
