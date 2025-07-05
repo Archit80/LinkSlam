@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_BASE_URL = process.env.NEXT_API_BASE_URL || 'http://localhost:8000/users';
+const API_BASE_URL = process.env.NEXT_API_BASE_URL || 'http://localhost:8000';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -13,7 +13,7 @@ const api = axios.create({
 
 export const getUserProfile = async (userId: string) => {
   try {
-    const res = await api.get(`/profile/${userId}`);
+    const res = await api.get(`/users/profile/${userId}`);
     return res.data;
   } catch (err: any) {
     console.error("Error fetching user profile:", err)
@@ -23,7 +23,7 @@ export const getUserProfile = async (userId: string) => {
 
 export const searchUsers = async (query: string) => {
   try {
-    const res = await api.get('/search', {
+    const res = await api.get('/users/search', {
       params: { q: query }
     });
     return res.data;

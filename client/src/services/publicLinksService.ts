@@ -1,6 +1,6 @@
 import axios from "axios";
 const API_BASE_URL =
-  process.env.NEXT_API_BASE_URL || "http://localhost:8000/public";
+  process.env.NEXT_API_BASE_URL || "http://localhost:8000";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,7 +14,7 @@ const api = axios.create({
 export const publicLinksService = {
   getPublicFeedLinks: async (page = 1, limit = 12) => {
     try {
-      const response = await api.get(`/feed?page=${page}&limit=${limit}`);
+      const response = await api.get(`/public/feed?page=${page}&limit=${limit}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching public links:", error);
@@ -24,7 +24,7 @@ export const publicLinksService = {
 
   createPublicLink: async (linkData: object) => {
     try {
-      const response = await api.post(`/create`, linkData);
+      const response = await api.post(`/public/create`, linkData);
       return response.data;
     } catch (error) {
       console.error("Error creating public link:", error);
@@ -34,7 +34,7 @@ export const publicLinksService = {
 
   toggleLikeLink: async (linkId: string) => {
     try {
-      const response = await api.post(`/like/${linkId}`);
+      const response = await api.post(`/public/like/${linkId}`);
       return response.data;
     } catch (error) {
       console.error("Error toggling like on link:", error);
@@ -44,7 +44,7 @@ export const publicLinksService = {
 
   toggleSaveLink: async (linkId: string) => {
     try {
-      const response = await api.post(`/save/${linkId}`);
+      const response = await api.post(`/public/save/${linkId}`);
       return response.data;
     } catch (error) {
       console.error("Error toggling save on link:", error);
@@ -54,7 +54,7 @@ export const publicLinksService = {
 
   searchLinks: async (q: string, tag: string) => {
     try {
-      const response = await api.get("/search", {
+      const response = await api.get("/public/search", {
         params: {
           q,
           tag,

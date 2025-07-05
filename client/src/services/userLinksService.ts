@@ -1,5 +1,6 @@
 import axios from "axios";
-const API_BASE_URL = process.env.NEXT_API_BASE_URL || "http://localhost:8000/";
+const API_BASE_URL = process.env.NEXT_API_BASE_URL || "http://localhost:8000";
+
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -21,7 +22,7 @@ const api = axios.create({
 export const userLinksService = {
   getAllLinks: async () => {
     try {
-      const response = await api.get(`link/get-all`);
+      const response = await api.get(`/link/get-all`);
       return response.data;
     } catch (error) {
       console.error("Error fetching links:", error);
@@ -31,7 +32,7 @@ export const userLinksService = {
 
   getPublicLinks: async () => {
     try {
-      const response = await api.get(`link/get-public`);
+      const response = await api.get(`/link/get-public`);
       return response.data;
     } catch (error) {
       console.error("Error fetching public links:", error);
@@ -41,7 +42,7 @@ export const userLinksService = {
 
   getPrivateLinks: async () => {
     try {
-      const response = await api.get(`link/get-private`);
+      const response = await api.get(`/link/get-private`);
       return response.data;
     } catch (error) {
       console.error("Error fetching private links:", error);
@@ -51,7 +52,7 @@ export const userLinksService = {
 
   createLink: async (linkData:object) => {
     try {
-      const response = await api.post(`link/create`, linkData);
+      const response = await api.post(`/link/create`, linkData);
       return response.data;
     } catch (error) {
       console.error("Error creating link:", error);
@@ -61,7 +62,7 @@ export const userLinksService = {
 
   updateLink: async (linkId: string, linkData: object) => {
     try {
-      const response = await api.put(`link/update/${linkId}`, linkData);
+      const response = await api.put(`/link/update/${linkId}`, linkData);
       return response.data;
     } catch (error) {
       console.error("Error updatingbut  link:", error);
@@ -71,7 +72,7 @@ export const userLinksService = {
 
   deleteLink: async (linkId: string) => {
     try {
-      const response = await api.delete(`link/delete/${linkId}`);
+      const response = await api.delete(`/link/delete/${linkId}`);
       return response;
     } catch (error) {
       console.error("Error deleting link:", error);
@@ -81,7 +82,7 @@ export const userLinksService = {
 
   searchLinks: async (q?: string, tag?: string) => {
     try {
-      const response = await api.get("link/search", {
+      const response = await api.get("/link/search", {
         params: {
           q,
           tag,
@@ -96,7 +97,7 @@ export const userLinksService = {
 
   getUserTopTags: async () => {
     try {
-      const response = await api.get("link/top-tags");
+      const response = await api.get("/link/top-tags");
       console.log("Top tags response:", response.data);
       return response.data.tags; // Assuming the response is an array of tag objects with a 'name' property
     } catch (error) {

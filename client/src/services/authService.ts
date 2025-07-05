@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_API_BASE_URL || "http://localhost:8000/";
+const API_BASE_URL = process.env.NEXT_API_BASE_URL || "http://localhost:8000";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,7 +14,7 @@ const api = axios.create({
 export const authService = {
   signup: async (userData: object) => {
     try {
-      const response = await api.post("auth/signup", userData);
+      const response = await api.post("/auth/signup", userData);
       return response;
     } catch (error) {
       console.error("Error during sign up:", error);
@@ -24,7 +24,7 @@ export const authService = {
 
   login: async (userData: object) => {
     try {
-      const response = await api.post("auth/login", userData);
+      const response = await api.post("/auth/login", userData);
       return response;
     } catch (error) {
       console.error("Error during login:", error);
@@ -34,7 +34,7 @@ export const authService = {
 
   googleLogin: async () => {
     try {
-      const response = await api.get("auth/google");
+      const response = await api.get("/auth/google");
       return response;
     } catch (error) {
       console.error("Error during Google login:", error);
@@ -44,7 +44,7 @@ export const authService = {
 
   logout: async () => {
     try {
-      const response = await api.post("auth/logout");
+      const response = await api.post("/auth/logout");
       return response;
     } catch (error) {
       console.error("Error during logout:", error);
@@ -54,7 +54,7 @@ export const authService = {
 
   getCurrentUser: async () => {
     try {
-      const response = await api.get("auth/me");
+      const response = await api.get("/auth/me");
       return response;
     } catch (error) {
       console.error("Error fetching current user:", error);
@@ -64,7 +64,7 @@ export const authService = {
 
   updateProfile: async (profileData: { name?: string; username?: string; bio?: string }) => {
     try {
-      const response = await api.put("auth/update-profile", profileData);
+      const response = await api.put("/auth/update-profile", profileData);
       return response.data;
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -81,7 +81,7 @@ export const authService = {
 
       console.log("formData appended", formData);
 
-      const response = await api.post("auth/upload-avatar", formData, {
+      const response = await api.post("/auth/upload-avatar", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
