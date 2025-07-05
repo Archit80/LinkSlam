@@ -269,29 +269,46 @@ const PROFILE_IMAGES = [
 ];
 
 const getRandom = (arr) => faker.helpers.arrayElement(arr);
-
 const generateFakeUsers = (count = 12, images = PROFILE_IMAGES) => {
-  const shuffledImages = faker.helpers.shuffle(images); // shuffle once
+  const usedUsernames = new Set();
+  const usedEmails = new Set();
+  const shuffledImages = faker.helpers.shuffle(images); // for profile images
+
   return Array.from({ length: count }).map((_, i) => {
-    const name = getRandom(DESI_NAMES);
-    const username =
-      getRandom(DESI_USERNAMES) + faker.number.int({ min: 1, max: 999 });
+    let username, email;
+    do {
+      username = (
+        getRandom(DESI_USERNAMES) + faker.number.int({ min: 1, max: 999 })
+      ).toLowerCase();
+    } while (usedUsernames.has(username));
+    usedUsernames.add(username);
+
+    do {
+      email = faker.internet.email().toLowerCase();
+    } while (usedEmails.has(email));
+    usedEmails.add(email);
+
     return {
-      name,
-      username: username.toLowerCase(),
-      email: faker.internet.email().toLowerCase(),
+      name: getRandom(DESI_NAMES),
+      username,
+      email,
       bio: getRandom(DESI_BIOS),
       password: faker.internet.password(),
       profileImage: {
-        url: shuffledImages[i] || getRandom(images), // no repeat if enough images
+        url: shuffledImages[i] || getRandom(images),
         public_id: faker.string.uuid(),
       },
     };
   });
 };
 
-const generateFakeLinks = (users, count = 20, images = PREVIEW_IMAGES) =>
-  Array.from({ length: count }).map((_, i) => {
+const generateFakeLinks = (
+  users,
+  count = 20,
+  previewImages = PREVIEW_IMAGES
+) => {
+  const shuffledImages = faker.helpers.shuffle(previewImages); // no repeats
+  return Array.from({ length: count }).map((_, i) => {
     const user = getRandom(users);
     return {
       url: getRandom(REAL_URLS),
@@ -302,13 +319,14 @@ const generateFakeLinks = (users, count = 20, images = PREVIEW_IMAGES) =>
       ),
       isPublic: faker.datatype.boolean({ probability: 0.99 }),
       isNSFW: faker.datatype.boolean({ probability: 0.19 }),
-      previewImage: images?.[i] || getRandom(PREVIEW_IMAGES),
+      previewImage: shuffledImages[i] || getRandom(previewImages),
       likes: [],
       saves: [],
       userId: user._id,
       sourceId: null,
     };
   });
+};
 
 const seedDB = async () => {
   try {
@@ -319,18 +337,20 @@ const seedDB = async () => {
     await Link.deleteMany();
     console.log("🧹 Cleared existing users & links");
 
-    const shuffledImages = faker.helpers.shuffle(PREVIEW_IMAGES);
-
-    const users = await User.insertMany(
-      generateFakeUsers(10, PROFILE_IMAGES)
+    // const shuffledImages = faker.helpers.shuffle(PREVIEW_IMAGES);
+    const users = await User.insertMany(generateFakeUsers(10, PROFILE_IMAGES));
+    const links = await Link.insertMany(
+      generateFakeLinks(users, 30, PREVIEW_IMAGES)
     );
+
+    // const users = await User.insertMany(generateFakeUsers(10, PROFILE_IMAGES));
     console.log(`👥 Seeded ${users.length} users`);
 
     // const shuffledImages = faker.helpers.shuffle(PREVIEW_IMAGES);
 
-    const links = await Link.insertMany(
-      generateFakeLinks(users, 30, shuffledImages)
-    );
+    // const links = await Link.insertMany(
+    //   generateFakeLinks(users, 30, shuffledImages)
+    // );
 
     console.log(`🔗 Seeded ${links.length} links`);
 

@@ -1,5 +1,5 @@
 import Link from "../models/link.js";
-import User from "../models/User.js";
+import User from "../models/user.js";
 import { fetchOgImage } from "../utils/fetchOgImage.js";
 
 export const getPublicFeedLinks = async (req, res) => {
