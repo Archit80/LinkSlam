@@ -87,7 +87,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
   const handleLike = async () => {
     try {
       const response = await publicLinksService.toggleLikeLink(link._id);
-      console.log("Toggle like response:", response);
+      // console.log("Toggle like response:", response);
       
       if (response.success) {
         setIsLiked(!isLiked);
@@ -103,7 +103,7 @@ const [likeCount, setLikeCount] = useState(link.likes?.length || 0);
   const handleSave = async () => {
     try {
       const response = await publicLinksService.toggleSaveLink(link._id);
-      console.log("Toggle save response:", response);
+      // console.log("Toggle save response:", response);
       if(response.success) {
         setIsSaved(!isSaved);
       }

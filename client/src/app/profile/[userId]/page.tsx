@@ -50,7 +50,7 @@ export default function ProfilePage( { params }: PageProps) {
       setIsLoading(true);
       try {
         const data = await getUserProfile(userId);
-        console.log("user profile", data);
+        // console.log("user profile", data);
 
         setProfile(data);
       } catch (err) {
@@ -152,7 +152,7 @@ export default function ProfilePage( { params }: PageProps) {
 
   const { user, publicLinks } = profile;
   // console.log(user?.profileImage?.url, "Profile Image URL");
-  console.log("user :", user);
+  // console.log("user :", user);
 
   // Use safeLinks everywhere
   const safeLinks = publicLinks ?? [];
@@ -203,7 +203,7 @@ export default function ProfilePage( { params }: PageProps) {
         id: "image-upload",
       });
       const response = await authService.uploadAvatar(file);
-      console.log("Image upload response:", response);
+      // console.log("Image upload response:", response);
       toast.success("Profile picture updated!", {
         id: "image-upload",
       });

@@ -54,7 +54,7 @@ export default function MySlamZonePage() {
 
     try {
       const response = await userLinksService.deleteLink(id);
-      console.log("Deleted link:", response);
+      // console.log("Deleted link:", response);
 
       if (typeof response === "object" && response !== null && "status" in response && (response as { status: number }).status === 200) {
         setLinks(links.filter((link) => link._id !== id));
@@ -89,7 +89,7 @@ export default function MySlamZonePage() {
           newLink._id,
           newLink
         );
-        console.log("Updated link:", response);
+        // console.log("Updated link:", response);
 
         if (response.link) {
           setLinks(
@@ -121,7 +121,7 @@ export default function MySlamZonePage() {
       // Add new link
       try {
         const response = await userLinksService.createLink(newLink);
-        console.log("Created link:", response);
+        // console.log("Created link:", response);
 
         // The response.link should now have _id
         const createdLink = response.link;
@@ -197,7 +197,7 @@ export default function MySlamZonePage() {
           response = await userLinksService.getAllLinks();
       }
 
-      console.log("Fetched links:", response);
+      // console.log("Fetched links:", response);/
 
       if (response.links) {
         setLinks(response.links);
@@ -235,7 +235,7 @@ export default function MySlamZonePage() {
     setIsLoading(true);
     try {
       const res = await userLinksService.searchLinks(query, "");
-      console.log("Search response:", res);
+      // console.log("Search response:", res);
       
       if (res && typeof res === 'object' && 'data' in res && Array.isArray(res.data)) {
         if (res.data.length === 0) {
@@ -259,7 +259,7 @@ export default function MySlamZonePage() {
     setIsLoading(true);
     try {
       const response = await userLinksService.searchLinks(undefined, tag);
-      console.log("Tag search response:", response);
+      // console.log("Tag search response:", response);
       if (response && typeof response === 'object' && 'data' in response && Array.isArray(response.data) && response.data.length > 0) {
         setLinks(response.data);
       } else {
@@ -287,7 +287,7 @@ export default function MySlamZonePage() {
 
       try {
         const tags = await userLinksService.getUserTopTags();
-        console.log("Fetched top tags:", tags);
+        // console.log("Fetched top tags:", tags);
 
         setTopTags(tags);
       } catch (err) {

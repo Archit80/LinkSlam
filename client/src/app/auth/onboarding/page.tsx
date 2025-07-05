@@ -40,8 +40,8 @@ export default function ProfileSettingsPage() {
       toast.loading("Uploading image...", {
         id: "image-upload",
       });
-      const response = await authService.uploadAvatar(file);
-      console.log("Image upload response:", response);
+      await authService.uploadAvatar(file);
+      // console.log("Image upload response:", response);
       toast.success("Profile picture updated!", {
         id: "image-upload",
       });
@@ -84,16 +84,16 @@ export default function ProfileSettingsPage() {
     const bioSanitized = bio.trim();
 
     try {
-      console.log("sending",   nameSanitized,
-        usernameSanitized,
-        bioSanitized,);
+      // console.log("sending",   nameSanitized,
+      //   usernameSanitized,
+      //   bioSanitized,);
       
       const response = await authService.updateProfile({
         name: nameSanitized,
         username: usernameSanitized,
         bio: bioSanitized,
       });
-      console.log("Profile update response:", response);
+      // console.log("Profile update response:", response);
 
       if (response.success) {
         toast.success("Profile updated successfully! 🎉");

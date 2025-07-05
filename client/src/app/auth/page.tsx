@@ -42,9 +42,9 @@ export default function LoginPage() {
             email,
             password
         })
-        console.log("Login response:", response)
+        // console.log("Login response:", response)
         if (response.status === 200) {
-          console.log("Login successful!")
+          // console.log("Login successful!")
           router.replace("/public-feed") 
         } else {
           setError(response.data || "Login failed. Please try again.")
@@ -76,7 +76,7 @@ export default function LoginPage() {
             // console.log(response);
             if (response.status === 201) {
                 toast.dismiss();
-                console.log("Signup successful!");
+                // console.log("Signup successful!");
                 toast.success("Account created successfully!");
                 router.replace("/auth/onboarding") ;
             } else {
@@ -95,7 +95,7 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     setLoading(true)
     setError(null)
-    console.log("Initiating Google login...")
+    // console.log("Initiating Google login...")
     // // Simulate Google OAuth flow
     // await new Promise((resolve) => setTimeout(resolve, 2000))
     // setError("Google login not yet implemented.")

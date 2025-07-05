@@ -187,7 +187,7 @@ export default function PublicFeedPage() {
       }
       try {
         const res = await searchUsers(query);
-        console.log("User search results:", res);
+        // console.log("User search results:", res);
         setUserSearchResults(res);
         setShowUserSuggestions(true);
       } catch (err) {
@@ -234,7 +234,7 @@ export default function PublicFeedPage() {
     try {
       setIsLoading(true);
       const res = await publicLinksService.searchLinks("", tag);
-      console.log("Search results for tag:", tag, res);
+      // console.log("Search results for tag:", tag, res);
 
       if (res.data && res.data.length === 0) {
         toast.info(`No links found for tag: ${tag}`, {

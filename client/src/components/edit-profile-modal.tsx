@@ -40,7 +40,7 @@ export function EditProfileModal({ open, setOpen, user, onProfileUpdate }: EditP
 
       const response = await authService.updateProfile(profileData);
       if(response.success){
-          console.log("Profile updated response:", response);
+          // console.log("Profile updated response:", response);
           toast.success("Profile updated!");
       }
       else {

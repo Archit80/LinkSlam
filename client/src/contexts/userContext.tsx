@@ -39,11 +39,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchUser = async () => {
       try {
         const response = await authService.getCurrentUser();
-        console.log("Fetched user:", response.data);
+        // console.log("Fetched user:", response.data);
         setUser(response.data); // response from /auth/me
 
         if (response.data?.isNewUser && !pathname.includes('/auth/onboarding')) {
-          console.log("New user detected, redirecting to onboarding...");
+          // console.log("New user detected, redirecting to onboarding...");
           router.push('/auth/onboarding');
         }
       } catch (err) {

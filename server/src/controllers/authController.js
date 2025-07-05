@@ -215,8 +215,8 @@ export const uploadAvatar = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    console.log("REQ FILE:", req.file);
-    console.log("REQ BODY:", req.body);
+    // console.log("REQ FILE:", req.file);
+    // console.log("REQ BODY:", req.body);
 
     // Delete old avatar if exists
     if (user.profileImage?.public_id) {

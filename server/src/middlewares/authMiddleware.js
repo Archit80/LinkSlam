@@ -13,7 +13,7 @@ export const authMiddleware = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    console.log("Token verification error:", error.message);
+    // console.log("Token verification error:", error.message);
     res.status(400).json({ message: "Invalid token." });
   }
 };

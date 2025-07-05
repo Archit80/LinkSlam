@@ -98,7 +98,7 @@ export const userLinksService = {
   getUserTopTags: async () => {
     try {
       const response = await api.get("/link/top-tags");
-      console.log("Top tags response:", response.data);
+      // console.log("Top tags response:", response.data);
       return response.data.tags; // Assuming the response is an array of tag objects with a 'name' property
     } catch (error) {
       console.error("Error fetching top tags:", error);

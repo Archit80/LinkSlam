@@ -73,20 +73,20 @@ export const authService = {
   },
 
   uploadAvatar: async (file: File) => {
-    console.log("Uploading avatar:", file);
+    // console.log("Uploading avatar:", file);
     
     try {
       const formData = new FormData();
       formData.append("avatar", file);
 
-      console.log("formData appended", formData);
+      // console.log("formData appended", formData);
 
       const response = await api.post("/auth/upload-avatar", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
+      // console.log(response);
       
       return response.data;  
       
