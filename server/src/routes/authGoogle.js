@@ -26,7 +26,7 @@ router.get(
       .cookie("token", token, {
         httpOnly: true,
         secure: true, // false for localhost
-        sameSite: "None",
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/", // Ensure cookie is sent for all paths
       })
