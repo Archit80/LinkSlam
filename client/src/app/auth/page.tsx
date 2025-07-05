@@ -12,9 +12,12 @@ import Link from "next/link"
 import { authService } from "@/services/authService" // Adjust the import based on your auth service location
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useUser } from "@/contexts/userContext"; // Import useUser
 
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { setUser } = useUser(); // <-- Get the setUser function from the context
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -22,8 +25,6 @@ export default function LoginPage() {
   // const [username, setUsername] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const router = useRouter()
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
   
@@ -45,7 +46,13 @@ export default function LoginPage() {
         // console.log("Login response:", response)
         if (response.status === 200) {
           // console.log("Login successful!")
-          router.replace("/public-feed") 
+          // --- THIS IS THE FIX ---
+          // 1. Manually update the global user state immediately.
+          setUser(response.user);
+
+          // 2. NOW you can redirect.
+          toast.success("Login successful!");
+          router.push("/my-zone"); // Or wherever you want to go
         } else {
           setError(response.data || "Login failed. Please try again.")
         }
