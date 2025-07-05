@@ -1,5 +1,5 @@
 import axios from "axios";
-// import { login } from '../../../server/src/controllers/authController';
+
 const API_BASE_URL = process.env.NEXT_API_BASE_URL || "http://localhost:8000/";
 
 const api = axios.create({
@@ -12,7 +12,7 @@ const api = axios.create({
 });
 
 export const authService = {
-  signup: async (userData) => {
+  signup: async (userData: object) => {
     try {
       const response = await api.post("auth/signup", userData);
       return response;
@@ -22,7 +22,7 @@ export const authService = {
     }
   },
 
-  login: async (userData) => {
+  login: async (userData: object) => {
     try {
       const response = await api.post("auth/login", userData);
       return response;
@@ -62,7 +62,7 @@ export const authService = {
     }
   },
 
-  updateProfile: async (profileData) => {
+  updateProfile: async (profileData: { name?: string; username?: string; bio?: string }) => {
     try {
       const response = await api.put("auth/update-profile", profileData);
       return response.data;
@@ -72,14 +72,14 @@ export const authService = {
     }
   },
 
-  uploadAvatar: async (file) => {
+  uploadAvatar: async (file: File) => {
     console.log("Uploading avatar:", file);
     
     try {
       const formData = new FormData();
       formData.append("avatar", file);
 
-      console.log("formData appended",formData);
+      console.log("formData appended", formData);
 
       const response = await api.post("auth/upload-avatar", formData, {
         headers: {

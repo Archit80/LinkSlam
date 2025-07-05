@@ -9,8 +9,16 @@ import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { authService } from "@/services/authService";
 import { toast } from "sonner"
+import type { User } from "@/contexts/userContext";
 
-export function EditProfileModal({ open, setOpen, user, onProfileUpdate }) {
+interface EditProfileModalProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  user: User | null;
+  onProfileUpdate: (updatedUser: Partial<User>) => void;
+}
+
+export function EditProfileModal({ open, setOpen, user, onProfileUpdate }: EditProfileModalProps) {
   const { register, handleSubmit } = useForm({
     defaultValues: {
       name: user?.name || "",
@@ -21,7 +29,7 @@ export function EditProfileModal({ open, setOpen, user, onProfileUpdate }) {
 
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: { name: string; username: string; bio: string }) => {
     try {
       setLoading(true);
       const profileData = {
@@ -46,7 +54,10 @@ export function EditProfileModal({ open, setOpen, user, onProfileUpdate }) {
       }
       setOpen(false);
     } catch (err) {
-      toast.error("Failed to update profile", err);
+      console.error("Profile update error:", err);
+      toast.error("Failed to update profile", {
+        description: err instanceof Error ? err.message : "An error occurred while updating your profile.",
+      });
     } finally {
       setLoading(false);
     }

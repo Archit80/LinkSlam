@@ -49,7 +49,7 @@ export const userLinksService = {
     }
   },
 
-  createLink: async (linkData) => {
+  createLink: async (linkData:object) => {
     try {
       const response = await api.post(`link/create`, linkData);
       return response.data;
@@ -59,7 +59,7 @@ export const userLinksService = {
     }
   },
 
-  updateLink: async (linkId: string, linkData) => {
+  updateLink: async (linkId: string, linkData: object) => {
     try {
       const response = await api.put(`link/update/${linkId}`, linkData);
       return response.data;
