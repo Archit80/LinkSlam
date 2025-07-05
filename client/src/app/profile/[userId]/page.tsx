@@ -32,11 +32,13 @@ interface UserProfile {
   publicLinks: LinkItem[];
 }
 
-export default function ProfilePage({
-  params,
-}: {
-  params: { userId: string };
-}) {
+interface ProfilePageProps {
+  params: {
+    userId: string;
+  };
+}
+
+export default function ProfilePage({ params }: ProfilePageProps) {
   const { userId } = params;
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
