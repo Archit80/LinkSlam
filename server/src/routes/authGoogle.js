@@ -21,16 +21,7 @@ router.get(
       expiresIn: "7d",
     });
 
-    res
-      .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true, // false for localhost
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: "/", // Ensure cookie is sent for all paths
-      })
-      .redirect("https://link-slam.vercel.app/public-feed"); 
+    res.redirect(`https://link-slam.vercel.app/auth/callback?token=${token}`);
   }
 );
 
