@@ -3,19 +3,21 @@ import axios from "axios";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  // The baseURL can be removed or set to '/' since we are calling our own API routes
+  baseURL: "/",
   headers: {
     "Content-Type": "application/json",
     Accept: "*/*",
   },
-  withCredentials: true, // Enable sending cookies with requests
+  withCredentials: true, // This remains crucial
 });
 
 export const authService = {
   signup: async (userData: object) => {
     try {
-      const response = await api.post("/auth/signup", userData);
-      return response;
+      // Change this URL
+      const response = await api.post("/api/auth/signup", userData);
+      return response.data;
     } catch (error) {
       console.error("Error during sign up:", error);
       throw error;
@@ -24,8 +26,9 @@ export const authService = {
 
   login: async (userData: object) => {
     try {
-      const response = await api.post("/auth/login", userData);
-      return response;
+      // Change this URL
+      const response = await api.post("/api/auth/login", userData);
+      return response.data;
     } catch (error) {
       console.error("Error during login:", error);
       throw error;
@@ -33,18 +36,14 @@ export const authService = {
   },
 
   googleLogin: async () => {
-    try {
-      const response = await api.get("/auth/google");
-      return response;
-    } catch (error) {
-      console.error("Error during Google login:", error);
-      throw error;
-    }
+    // This will be handled differently, for now, we can point it to the backend
+    window.location.href = `${API_BASE_URL}/auth/google`;
   },
 
   logout: async () => {
     try {
-      const response = await api.post("/auth/logout");
+      // Change this URL
+      const response = await api.post("/api/auth/logout");
       return response;
     } catch (error) {
       console.error("Error during logout:", error);
