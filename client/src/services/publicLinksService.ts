@@ -53,13 +53,17 @@ export const publicLinksService = {
   },
 
   searchLinks: async (q: string, tag: string) => {
-    return await api.get("/search", {
-      params: {
-        q,
-        tag,
-      },
-    });
+    try {
+      const response = await api.get("/search", {
+        params: {
+          q,
+          tag,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error searching links:", error);
+      throw error;
+    }
   },
-
-
 };

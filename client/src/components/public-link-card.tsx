@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { publicLinksService } from "@/services/publicLinksService";
-import { log } from "console";
+// import { log } from "console";
 
 
 export interface LinkItem {

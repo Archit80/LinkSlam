@@ -33,7 +33,10 @@ const linkSchema = new mongoose.Schema(
     },
 
   },
-  { timestamps: true }
+  { timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+ }
 );
 
 const Link = mongoose.models.Link || mongoose.model("Link", linkSchema);

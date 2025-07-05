@@ -3,14 +3,16 @@ import User from "../models/user.js";
 import { fetchOgImage } from "../utils/fetchOgImage.js";
 
 export const getPublicFeedLinks = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 20 } = req.query;
+  const pageNum = parseInt(page, 10) || 1;
+  const limitNum = parseInt(limit, 10) || 20;
 
   try {
     const publicLinks = await Link.find({ isPublic: true })
       .populate("userId", "name email username")
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
 
     const totalCount = await Link.countDocuments({ isPublic: true });
 
@@ -18,8 +20,8 @@ export const getPublicFeedLinks = async (req, res) => {
       message: "Public feed links fetched successfully",
       links: publicLinks,
       total: totalCount,
-      page: Number(page),
-      hasMore: page * limit < totalCount,
+      page: pageNum,
+      hasMore: pageNum * limitNum < totalCount,
     });
   } catch (error) {
     console.error("Error fetching public feed links:", error);
@@ -245,4 +247,3 @@ export const searchLinks = async (req, res) => {
     res.status(500).json({ message: "Search failed", error: err.message });
   }
 };
-

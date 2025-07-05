@@ -4,7 +4,7 @@ import {
   Flame,
   Search,
   Shuffle,
-  TrendingUp,
+  // TrendingUp,
   Link as LinkIcon,
   User,
   ChevronDown,
@@ -22,7 +22,6 @@ import {
 import Image from "next/image";
 
 interface PublicFeedHeaderProps {
-  onNewLinkClick: () => void;
   onTagClick: (tag: string) => void;
 
   query: string;
@@ -77,7 +76,6 @@ const handleRandomLink = () => {
 };
 
 export function PublicFeedHeader({
-  onNewLinkClick,
   onTagClick,
   query,
   setQuery,

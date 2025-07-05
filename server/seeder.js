@@ -304,26 +304,30 @@ const generateFakeUsers = (count = 12, images = PROFILE_IMAGES) => {
 
 const generateFakeLinks = (
   users,
-  count = 20,
+  titles,
   previewImages = PREVIEW_IMAGES
 ) => {
   const shuffledImages = faker.helpers.shuffle(previewImages); // no repeats
-  return Array.from({ length: count }).map((_, i) => {
+  return titles.map((title, i) => {
     const user = getRandom(users);
     return {
       url: getRandom(REAL_URLS),
-      title: getRandom(DESI_TITLES),
+      title: title, // Use the sequential title
       tags: faker.helpers.arrayElements(
         TAGS_POOL,
-        faker.number.int({ min: 2, max: 4 })
+        faker.number.int({ min: 2, max: 6 })
       ),
-      isPublic: faker.datatype.boolean({ probability: 0.99 }),
+      isPublic: faker.datatype.boolean({ probability: 1.0 }),
       isNSFW: faker.datatype.boolean({ probability: 0.19 }),
-      previewImage: shuffledImages[i] || getRandom(previewImages),
+      previewImage: shuffledImages[i % shuffledImages.length] || getRandom(previewImages),
       likes: [],
       saves: [],
       userId: user._id,
       sourceId: null,
+      createdAt: faker.date.between({
+        from: "2022-01-01T00:00:00.000Z",
+        to: "2025-07-05T00:00:00.000Z",
+      }),
     };
   });
 };
@@ -340,7 +344,7 @@ const seedDB = async () => {
     // const shuffledImages = faker.helpers.shuffle(PREVIEW_IMAGES);
     const users = await User.insertMany(generateFakeUsers(10, PROFILE_IMAGES));
     const links = await Link.insertMany(
-      generateFakeLinks(users, 30, PREVIEW_IMAGES)
+      generateFakeLinks(users, DESI_TITLES, PREVIEW_IMAGES)
     );
 
     // const users = await User.insertMany(generateFakeUsers(10, PROFILE_IMAGES));

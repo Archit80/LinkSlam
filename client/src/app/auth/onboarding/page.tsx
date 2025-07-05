@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import {
   Card,
@@ -25,7 +25,7 @@ export default function ProfileSettingsPage() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  // const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

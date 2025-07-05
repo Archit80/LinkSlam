@@ -11,7 +11,7 @@ import { authService } from "@/services/authService";
 import { toast } from "sonner"
 
 export function EditProfileModal({ open, setOpen, user, onProfileUpdate }) {
-  const { register, handleSubmit, watch, setValue, reset } = useForm({
+  const { register, handleSubmit } = useForm({
     defaultValues: {
       name: user?.name || "",
       username: user?.username || "",

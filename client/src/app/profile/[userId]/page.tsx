@@ -12,7 +12,6 @@ import {
   Edit3,
   Camera,
   Star,
-  Mail,
   AtSign,
 } from "lucide-react";
 import Masonry from "react-masonry-css";
@@ -20,7 +19,7 @@ import { LinkCard, type LinkItem } from "@/components/public-link-card";
 import { getUserProfile } from "@/services/userServices";
 import { authService } from "@/services/authService";
 import { toast } from "sonner";
-import { useUser } from "@/contexts/userContext";
+import { useUser, User } from "@/contexts/userContext";
 import { Progress } from "@/components/ui/progress";
 import React from "react";
 import { EditProfileModal } from "@/components/edit-profile-modal";
@@ -28,20 +27,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { motion } from "framer-motion";
 
+interface UserProfile {
+  user: User;
+  publicLinks: LinkItem[];
+}
+
 export default function ProfilePage({
   params,
 }: {
   params: { userId: string };
 }) {
-  // Unwrap params for future Next.js compatibility
-  const actualParams =
-    typeof params.then === "function" ? React.use(params) : params;
-  const userId = actualParams.userId;
+  const { userId } = params;
 
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  // const [editedUser, setEditedUser] = useState<any>(null);
   const { user: currentUser } = useUser();
   const [open, setOpen] = useState(false);
 
@@ -53,20 +52,15 @@ export default function ProfilePage({
         console.log("user profile", data);
 
         setProfile(data);
-        // setEditedUser(data.user);
-      } catch (err: any) {
-        toast.error("Failed to load profile", { description: err?.message });
+      } catch (err) {
+        const error = err as Error;
+        toast.error("Failed to load profile", { description: error.message });
       } finally {
         setIsLoading(false);
       }
     };
     fetchProfile();
   }, [userId]);
-
-  // const handleSave = () => {
-  //   setIsEditing(false);
-  //   // Save logic here if needed
-  // };
 
   const breakpointCols = {
     default: 4,
@@ -142,14 +136,17 @@ export default function ProfilePage({
     );
   }
 
-  const handleProfileUpdate = (updatedUser: any) => {
-    setProfile((prev: any) => ({
-      ...prev,
-      user: {
-        ...prev.user,
-        ...updatedUser,
-      },
-    }));
+  const handleProfileUpdate = (updatedUser: Partial<User>) => {
+    setProfile((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        user: {
+          ...prev.user,
+          ...updatedUser,
+        },
+      };
+    });
   };
 
   const { user, publicLinks } = profile;
@@ -209,18 +206,21 @@ export default function ProfilePage({
       toast.success("Profile picture updated!", {
         id: "image-upload",
       });
-      // toast.success("Profile picture updated!");
 
-      setProfile((prev: any) => ({
-        ...prev,
-        user: {
-          ...prev.user,
-          profileImage: response.profileImage,
-        },
-      }));
-    } catch (err: any) {
+      setProfile((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          user: {
+            ...prev.user,
+            profileImage: response.profileImage,
+          },
+        };
+      });
+    } catch (err) {
+      const error = err as Error;
       toast.error("Image upload failed", {
-        description: err.message,
+        description: error.message,
       });
     }
   };
@@ -298,7 +298,7 @@ export default function ProfilePage({
                           className="dark w-full sm:w-auto bg-red-primary hover:bg-red-500 hover:cursor-pointer text-white font-medium px-6 py-2.5 rounded-lg shadow-lg hover:shadow-red-500/30 transition-all duration-300 transform hover:-translate-y-0.5"
                         >
                           <Edit3 className="dark h-4 w-4 mr-2" />
-                          {isEditing ? "Cancel" : "Edit Profile"}
+                          Edit Profile
                         </Button>
                       </div>
                     )}
@@ -448,8 +448,7 @@ export default function ProfilePage({
                 safeLinks.map((link: LinkItem) => {
                   const isLiked = currentUser?.likedLinks?.includes(link._id);
                   const isSaved = currentUser?.savedLinks?.includes(link._id);
-                  const isMine =
-                    currentUser?._id === (link.userId?._id || link.userId);
+                  const isMine = currentUser?._id === link.userId;
 
                   return (
                     <LinkCard

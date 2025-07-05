@@ -14,6 +14,8 @@ import { searchUsers } from "@/services/userServices";
 import debounce from "lodash.debounce";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const PAGE_LIMIT = 12;
+
 export default function PublicFeedPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
@@ -22,9 +24,8 @@ export default function PublicFeedPage() {
   const [query, setQuery] = useState("");
 
   const [searchType, setSearchType] = useState<"links" | "users">("links");
-  // const [searchedUsers, setSearchedUsers] = useState<any[]>([]);
 
-  const [userSearchResults, setUserSearchResults] = useState<any[]>([]);
+  const [userSearchResults, setUserSearchResults] = useState<User[]>([]);
   const [showUserSuggestions, setShowUserSuggestions] = useState(false);
 
   // Pagination state
@@ -58,11 +59,11 @@ export default function PublicFeedPage() {
     setIsModalOpen(true);
   };
 
-  const showServerErrorToast = (title: string, error: any) => {
-    const apiErrorMessage = error?.response?.data?.message || error?.message;
+  const showServerErrorToast = (title: string, error: unknown) => {
+    const apiErrorMessage =
+      (error as any)?.response?.data?.message || (error as Error)?.message;
     toast.error(title, {
-      description:
-        apiErrorMessage || "Unable to complete request. Please try again.",
+      description: apiErrorMessage || "Unable to complete request. Please try again.",
     });
   };
 
@@ -71,7 +72,7 @@ export default function PublicFeedPage() {
     const fetchInitialLinks = async () => {
       try {
         setIsLoading(true);
-        const res = await publicLinksService.getPublicFeedLinks(1);
+        const res = await publicLinksService.getPublicFeedLinks(1, PAGE_LIMIT);
         setPublicLinks(res.links || res.data || []);
         setHasMore(res.hasMore);
         setPage(2);
@@ -90,7 +91,7 @@ export default function PublicFeedPage() {
     if (!hasMore || isLoadingMore) return;
     try {
       setIsLoadingMore(true);
-      const res = await publicLinksService.getPublicFeedLinks(page);
+      const res = await publicLinksService.getPublicFeedLinks(page, PAGE_LIMIT);
       setPublicLinks((prev) => {
         const newLinks = res.links || res.data || [];
         const allLinks = [...prev, ...newLinks];
@@ -109,7 +110,7 @@ export default function PublicFeedPage() {
     }
   };
 
-  const handleSaveLink = async (newLink: LinkItem) => {
+  const handleSaveLink = async (newLink: Omit<LinkItem, "_id" | "user">) => {
     const loadingToast = toast.loading("Creating your link...", {
       description: "Slamming your link to the public feed",
     });
@@ -128,15 +129,23 @@ export default function PublicFeedPage() {
       toast.success("Link slammed successfully! 🔥", {
         description: `"${createdLink.title}" has been posted to the public feed`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
       let errorMessage = "Unable to create link. Please try again.";
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (
-        error.message &&
-        error.message !== "Request failed with status code 400"
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        "message" in error.response.data &&
+        typeof error.response.data.message === "string"
       ) {
+        errorMessage = error.response.data.message;
+      } else if (error instanceof Error && error.message) {
         errorMessage = error.message;
       }
       toast.error("Failed to slam link", {
@@ -167,10 +176,11 @@ export default function PublicFeedPage() {
         setIsLoading(true);
         const res = query.trim()
           ? await publicLinksService.searchLinks(query, "")
-          : await publicLinksService.getPublicFeedLinks(1); // fetch all
+          : await publicLinksService.getPublicFeedLinks(1, PAGE_LIMIT); // fetch all with pagination
 
         setPublicLinks(res.data || res.links || []);
-        setHasMore(!query); // only enable pagination if showing full feed
+        setHasMore(res.hasMore); // Correctly set hasMore from the response
+        setPage(2); // Reset page to 2 for subsequent loads
       } catch (err) {
         showServerErrorToast("Search failed", err);
       } finally {
