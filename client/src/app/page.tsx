@@ -7,7 +7,6 @@ import SiteFooter from "@/components/landing page/site-footer"
 import { Particles } from "@/components/magicui/particles";
 
 export default function LandingPage() {
-  // console.log(process.env.NEXT_API_BASE_URL);
   return (
     <div className="min-h-screen bg-[#060606] overflow-x-hidden text-white flex flex-col selection:bg-red-100 selection:text-red-700">
        <Particles 
