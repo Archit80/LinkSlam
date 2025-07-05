@@ -56,7 +56,7 @@ export default function MySlamZonePage() {
       const response = await userLinksService.deleteLink(id);
       console.log("Deleted link:", response);
 
-      if (response.status === 200) {
+      if (typeof response === "object" && response !== null && "status" in response && (response as { status: number }).status === 200) {
         setLinks(links.filter((link) => link._id !== id));
         toast.success("Link deleted successfully", {
           description:
