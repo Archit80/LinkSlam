@@ -25,8 +25,8 @@ router.get(
       .status(200)
       .cookie("token", token, {
         httpOnly: true,
-        secure: false, // false for localhost
-        sameSite: "Lax",
+        secure: true, // false for localhost
+        sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/", // Ensure cookie is sent for all paths
       })

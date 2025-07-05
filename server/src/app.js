@@ -18,7 +18,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: 'https://link-slam.vercel.app',
+  origin: ['https://link-slam.vercel.app', 'http://localhost:3000'], // both production and development
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]

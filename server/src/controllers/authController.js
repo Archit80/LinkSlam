@@ -43,8 +43,8 @@ export const signup = async (req, res) => {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax", //bcoz frontend on vercel and backend on render
+        secure: true,
+        sameSite: "None", //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(201)
@@ -147,8 +147,8 @@ export const login = async (req, res) => {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax", //bcoz frontend on vercel and backend on render
+        secure: true,
+        sameSite: "None", //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(200)
