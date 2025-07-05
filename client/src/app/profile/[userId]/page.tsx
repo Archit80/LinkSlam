@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,12 +32,13 @@ interface UserProfile {
   publicLinks: LinkItem[];
 }
 
-export default function ProfilePage({
-  params,
-}: {
-  params: { userId: string };
-}) {
-  const { userId } = params;
+interface PageProps {
+  params: Promise<{ userId: string }>;
+}
+
+
+export default function ProfilePage( { params }: PageProps) {
+  const { userId } = use(params);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
