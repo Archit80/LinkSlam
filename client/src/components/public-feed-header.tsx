@@ -89,14 +89,18 @@ export function PublicFeedHeader({
   onDebouncedInput,
 }: PublicFeedHeaderProps) {
   const popularTags = [
-    "webdev",
-    "haha",
-    "hm",
-    "new",
-    "tools",
-    "news",
-    "react",
-    "nextjs",
+    "bollywood",
+    "cricket",
+    "jugaad",
+    "chai",
+    "modi",
+    "startup-india",
+    "techie",
+    "iit",
+    "biryani",
+    "street-food",
+    "rickshaw",
+    "pg-life",
   ]; //TODO: add actual tags
 
   const router = useRouter();
@@ -107,7 +111,8 @@ export function PublicFeedHeader({
   );
 
   // Use prop state if available, otherwise use local state
-  const currentSearchType = typeof searchType !== "undefined" ? searchType : localSearchType;
+  const currentSearchType =
+    typeof searchType !== "undefined" ? searchType : localSearchType;
   const handleSearchTypeChange = (type: "links" | "users") => {
     if (typeof setSearchType === "function") {
       setSearchType(type);
@@ -135,7 +140,8 @@ export function PublicFeedHeader({
             </h1>
           </div>
           <p className="text-zinc-400 text-lg max-w-2xl">
-            Discover and share the web&apos;s most amazing links with the community
+            Discover and share the web&apos;s most amazing links with the
+            community
           </p>
         </div>
 
@@ -169,9 +175,7 @@ export function PublicFeedHeader({
                   onClick={() => handleSearchTypeChange("links")}
                 >
                   <LinkIcon className="h-4 w-4 mr-2" />
-                  <span className="group-hover:text-white">
-                  Search Links
-                  </span>
+                  <span className="group-hover:text-white">Search Links</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-zinc-200 group hover:text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
@@ -179,7 +183,7 @@ export function PublicFeedHeader({
                 >
                   <User className="h-4 w-4 mr-2" />
                   <span className=" group-hover:text-white hover:text-white">
-                  Search Users
+                    Search Users
                   </span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

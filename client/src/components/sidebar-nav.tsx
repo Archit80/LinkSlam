@@ -30,6 +30,7 @@ import {
 import { authService } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/userContext";
+import { toast } from "sonner";
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -49,9 +50,17 @@ export function SidebarNav() {
   };
 
   const handleLogout = async () => {
-    const response = await authService.logout();
-    if (response.status === 200) {
-      router.replace("/");
+    try {
+      const response = await authService.logout();
+      // --- THIS IS THE FIX ---
+      // Check for the success property in the returned data, not the status.
+      if (response && response.data) {
+        router.replace("/");
+      } else {
+        toast.error("Logout failed", { description: "Please try again." });
+      }
+    } catch (error) {
+      toast.error("Logout failed", { description: "An unexpected error occurred." });
     }
   };
 

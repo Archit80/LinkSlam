@@ -9,126 +9,98 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Mail, Lock, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { authService } from "@/services/authService" // Adjust the import based on your auth service location
+import { authService } from "@/services/authService"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { useUser } from "@/contexts/userContext"; // Import useUser
-
+import { useUser } from "@/contexts/userContext"
+import axios from "axios"; // <-- Make sure this import is present
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser } = useUser(); // <-- Get the setUser function from the context
+  const { setUser } = useUser();
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  // const [username, setUsername] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
   
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-
-    // // Simulate API call
-    // await new Promise((resolve) => setTimeout(resolve, 1500))
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     if (isLogin) {
-      // Login logic
-       try {
-        const response = await authService.login({
-            email,
-            password
-        })
-        // console.log("Login response:", response)
-        if (response.status === 200) {
-          // console.log("Login successful!")
-          // --- THIS IS THE FIX ---
-          // 1. Manually update the global user state immediately.
-          setUser(response.user);
+      try {
+        const loginResponse = await authService.login({
+          email,
+          password,
+        });
 
-          // 2. NOW you can redirect.
+        if (loginResponse && loginResponse.user) {
+          setUser(loginResponse.user);
           toast.success("Login successful!");
-          router.push("/my-zone"); // Or wherever you want to go
+          router.push("/public-feed");
         } else {
-          setError(response.data || "Login failed. Please try again.")
+          setError(loginResponse.message || "An unexpected error occurred.");
         }
-       } catch (error: unknown) {
-        console.error("Login error:", error)
-        const errorMessage = 
-          error && typeof error === 'object' && 'response' in error && 
-          error.response && typeof error.response === 'object' && 'data' in error.response &&
-          error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
+      } catch (error: unknown) {
+        console.error("Login error:", error);
+        const errorMessage =
+          axios.isAxiosError(error) && error.response?.data?.message
             ? String(error.response.data.message)
-            : "Login failed. Please try again.";
-        setError(errorMessage)
-       }
-       
+            : "Login failed. Please check your credentials.";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
     } else {
       // Signup logic
       if (password !== confirmPassword) {
-        setError("Passwords do not match.")
-      } else if (password.length < 8) {
-        setError("Password must be at least 8 characters long.")
-      } else {
-        try{
-            toast.loading("Creating your account...");
-            const response = await authService.signup({
-                email,
-                password,
-            })
-            // console.log(response);
-            if (response.status === 201) {
-                toast.dismiss();
-                // console.log("Signup successful!");
-                toast.success("Account created successfully!");
-                router.replace("/auth/onboarding") ;
-            } else {
-                setError(response.data.message || "Signup failed. Please try again.")
-            }
-        } catch(err){
-            console.error("Signup error:", err)
-            setError("An error occurred during signup. Please try again.")
+        setError("Passwords do not match.");
+        setLoading(false);
+        return;
+      }
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters long.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        toast.loading("Creating your account...");
+        const signupResponse = await authService.signup({
+          email,
+          password,
+        });
+
+        if (signupResponse && signupResponse.user) {
+          setUser(signupResponse.user);
+          toast.success("Account created successfully!");
+          router.push("/public-feed");
+        } else {
+          setError(signupResponse.message || "Signup failed. Please try again.");
         }
-        // Redirect or set user session
+      } catch (err) {
+        console.error("Signup error:", err);
+        const errorMessage =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? String(err.response.data.message)
+            : "An error occurred during signup.";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
     }
-    setLoading(false)
-  }
+  };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true)
-    setError(null)
-    // console.log("Initiating Google login...")
-    // // Simulate Google OAuth flow
-    // await new Promise((resolve) => setTimeout(resolve, 2000))
-    // setError("Google login not yet implemented.")
-    // setLoading(false)
-    try {
-    //   const response = await authService.googleLogin();
-    //   console.log("Google login response:", response)
-      window.location.href = `${API_BASE_URL}/auth/google` // Redirect to your backend Google auth endpoint;
-    //   if (response.status === 200) {
-    //     console.log("Google login successful!")
-    //     router.replace("/public-feed") 
-    //   } else {
-    //     setError(response.data || "Google login failed. Please try again.")
-    //   }
-    } catch (error: unknown) {
-      console.error("Google login error:", error)
-      const errorMessage = 
-        error && typeof error === 'object' && 'response' in error && 
-        error.response && typeof error.response === 'object' && 'data' in error.response &&
-        error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
-          ? String(error.response.data.message)
-          : "Google login failed. Please try again.";
-      setError(errorMessage)
-    }
-
-  }
+  const handleGoogleLogin = () => {
+    setLoading(true);
+    setError(null);
+    window.location.href = `${API_BASE_URL}/auth/google`;
+  };
 
   return (
     <div className="dark flex min-h-screen items-center justify-center p-4 bg-background relative overflow-hidden">
