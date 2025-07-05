@@ -32,13 +32,13 @@ interface UserProfile {
   publicLinks: LinkItem[];
 }
 
-// interface ProfilePageProps {
-//   params: { userId: string };
-//   searchParams: { [key: string]: string | string[] | undefined };
-// }
+interface ProfilePageProps {
+  params: { userId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
-export default function ClientProfilePage({ userId }: { userId: string }) {
-  // const { userId } = params;
+export default function ProfilePage({ params }: ProfilePageProps) {
+  const { userId } = params;
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
