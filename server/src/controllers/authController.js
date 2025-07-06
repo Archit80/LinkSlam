@@ -44,7 +44,7 @@ export const signup = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none", //bcoz frontend on vercel and backend on render
+        sameSite: "None", //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(201)
@@ -148,7 +148,7 @@ export const login = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none", //bcoz frontend on vercel and backend on render
+        sameSite: "None", //bcoz frontend on vercel and backend on render
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(200)
@@ -171,7 +171,7 @@ export const logout = async (req, res) => {
       .clearCookie("token", {
         httpOnly: true,
         secure: true,
-        sameSite: "none", // Add this for consistency
+        sameSite: "None", // Add this for consistency
       })
       .json({ message: "Logged out" });
   } catch (error) {
