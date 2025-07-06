@@ -30,13 +30,13 @@ export default function NotFound() {
             fontSize="clamp(2rem, 5vw, 2.25rem)"
             fontWeight={700}
             color="#FFFFFF"
-            className="mb-4"
+            // className="mb-4"
           >
             Page Not Found
           </FuzzyText>
         </div>
         <p className="text-lg md:text-xl text-gray-300 max-w-md mb-8">
-          Either this page doesn’t exist, or you just broke the internet. (It’s
+          Either this page doesn&apos;t exist, or you just broke the internet. (It’s
           probably the first one.)
         </p>
         <Button
