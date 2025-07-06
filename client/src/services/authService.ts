@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8
 export const authService = {
   signup: async (userData: object) => {
     try {
-      const response = await api.post("/api/auth/signup", userData);
+      const response = await api.post("/auth/signup", userData);
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
@@ -18,7 +18,7 @@ export const authService = {
 
   login: async (userData: object) => {
     try {
-      const response = await api.post("/api/auth/login", userData);
+      const response = await api.post("/auth/login", userData);
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
@@ -37,18 +37,19 @@ export const authService = {
   logout: async () => {
     try {
       localStorage.removeItem("token");
-      const response = await api.post("/api/auth/logout");
+      const response = await api.post("/auth/logout");
       return response;
     } catch (error) {
       console.error("Error during logout:", error);
+      // Even if logout fails, remove token locally
+      localStorage.removeItem("token");
       throw error;
     }
   },
 
   getCurrentUser: async () => {
     try {
-      // Use the new proxy route
-      const response = await api.get("/api/auth/me");
+      const response = await api.get("/auth/me");
       return response;
     } catch (error) {
       console.error("Error fetching current user:", error);
@@ -58,8 +59,7 @@ export const authService = {
 
   updateProfile: async (profileData: { name?: string; username?: string; bio?: string }) => {
     try {
-      // Use the new proxy route
-      const response = await api.put("/api/auth/update-profile", profileData);
+      const response = await api.put("/auth/update-profile", profileData);
       return response.data;
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -71,8 +71,8 @@ export const authService = {
     try {
       const formData = new FormData();
       formData.append("avatar", file);
-      // Use the new proxy route
-      const response = await api.post("/api/auth/upload-avatar", formData, {
+      
+      const response = await api.post("/auth/upload-avatar", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

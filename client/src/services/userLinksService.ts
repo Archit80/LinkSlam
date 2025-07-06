@@ -1,23 +1,4 @@
-import axios from "axios";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "*/*",
-  },
-  withCredentials: true, // Allow cookies to be sent with requests
-});
-
-// const setAuthHeader = (token) => {
-//     if (token) {
-//         api.defaults.headers.Authorization = `Bearer ${token}`;
-//     } else {
-//         delete api.defaults.headers.Authorization;
-//     }
-// };
+import api from "./axiosInstance";
 
 export const userLinksService = {
   getAllLinks: async () => {

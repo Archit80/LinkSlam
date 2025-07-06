@@ -13,9 +13,11 @@ import { authService } from "@/services/authService"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useUser } from "@/contexts/userContext"
+import { useRedirectIfAuthenticated } from "@/hooks/useAuthGuard"
 import axios from "axios"; // <-- Make sure this import is present
 
 export default function LoginPage() {
+  useRedirectIfAuthenticated(); // Redirect if already authenticated
   const router = useRouter();
   const { setUser } = useUser();
   const [isLogin, setIsLogin] = useState(true)

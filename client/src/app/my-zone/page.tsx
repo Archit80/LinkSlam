@@ -7,9 +7,11 @@ import { LinkCard, type LinkItem } from "@/components/link-card";
 import { LinkFormModal } from "@/components/link-form-modal";
 import { userLinksService } from "@/services/userLinksService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 // import { useUser } from "@/contexts/userContext";
 
 export default function MySlamZonePage() {
+  useAuthGuard(); // Add authentication guard
   // const { user } = useUser();
   const [links, setLinks] = useState<LinkItem[]>([]); // <-- FIX: Initialize with an empty array
   const [isLoading, setIsLoading] = useState(true);

@@ -14,6 +14,7 @@ import { useUser } from "@/contexts/userContext";
 import type { User } from "@/contexts/userContext";
 import { searchUsers } from "@/services/userServices";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 // import type { User } from "@/types/user"; // Adjust the import path as needed
 
 // Custom debounce function to avoid lodash.debounce type issues
@@ -28,6 +29,7 @@ function debounce<T extends (...args: unknown[]) => unknown>(func: T, wait: numb
 const PAGE_LIMIT = 12;
 
 export default function PublicFeedPage() {
+  useAuthGuard(); // Add authentication guard
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
   const [publicLinks, setPublicLinks] = useState<LinkItem[]>([]);

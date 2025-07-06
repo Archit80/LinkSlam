@@ -1,30 +1,16 @@
 
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-// import { useUser } from './contexts/userContext'
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value
-  // const { user } = useUser();
-  const protectedPaths = ['/my-zone', '/public-feed']  
-  const isProtected = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  ) 
-
+  // Since we're using localStorage for tokens, we can't check authentication 
+  // in middleware (server-side). Let the client-side handle redirects.
+  
   const path = request.nextUrl.pathname
-
-  if (path === ( '/auth') && token) {
-    return NextResponse.redirect(new URL('/my-zone', request.url))
-  }
-
-  if (path === '/' && token) {
-    return NextResponse.redirect(new URL('/my-zone', request.url))
-  }
-
-
-  if (isProtected && !token) {
-    // Redirect to home page if no token
-    return NextResponse.redirect(new URL('/', request.url))
+  
+  // Only handle public paths that don't require authentication checks
+  if (path === '/') {
+    return NextResponse.next()
   }
 
   return NextResponse.next()
@@ -32,12 +18,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/my-zone',
-     '/auth/:path*',   
-    '/my-zone/:path*',
-    '/',
-    '/public-feed',
-    '/auth/onboarding',
-    
-    ],
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }

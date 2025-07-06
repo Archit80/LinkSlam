@@ -11,8 +11,8 @@ export default function AuthCallbackHandler() {
     const token = searchParams.get("token");
 
     if (token) {
-      // Set the cookie and redirect
-      document.cookie = `token=${token}; path=/; max-age=604800; SameSite=None; Secure`;
+      // Store token in localStorage instead of cookies
+      localStorage.setItem("token", token);
       window.location.href = "/my-zone";
     } else {
       // Or redirect back to login if no token
