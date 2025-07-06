@@ -87,12 +87,12 @@ export function SidebarNav() {
     return (
       <>
         {/* Bottom nav for mobile */}
-        <nav className="fixed dark bottom-0 left-0 right-0 z-50 flex justify-around items-center bg-card border-t border-zinc-700 py-2 px-4">
+        <nav className="fixed dark bottom-0 left-0 right-0 z-50 flex items-center bg-card border-t border-zinc-700 py-2 px-4">
           {navMain.map((item) => (
             <Link
               key={item.title}
               href={item.url}
-              className={`flex flex-col items-center justify-center text-xs ${
+              className={`w-1/3 flex flex-col items-center justify-center text-xs ${
                 item.isActive
                   ? "text-red-500"
                   : "text-zinc-400 hover:text-zinc-200"
@@ -105,7 +105,7 @@ export function SidebarNav() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex dark flex-col items-center justify-center text-zinc-400 hover:text-zinc-200">
+              <button className="w-1/3 flex dark flex-col items-center justify-center text-zinc-400 hover:text-zinc-200">
                 <Avatar className="h-6 w-6 mb-1">
                   <AvatarImage src={userData.image} alt={userData.name} />
                   <AvatarFallback>LS</AvatarFallback>
