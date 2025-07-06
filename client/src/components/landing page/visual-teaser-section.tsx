@@ -19,11 +19,11 @@ export default function VisualTeaserSection() {
           />
 
           {/* Floating Card 1 (Public View) */}
-          <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 rotate-[-8deg] md:rotate-[-15deg] z-10">
+          <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/3 rotate-[-8deg] md:rotate-[-15deg] z-10">
             <Image
-              src="/logo.png"
-              width={450}
-              height={300}
+              src="/public.png"
+              width={650}
+              height={367}
               alt="Slam Stream Public View Screenshot"
               className="rounded-lg shadow-2xl border border-gray-700 transform hover:scale-105 transition-transform duration-300"
             />
@@ -33,9 +33,9 @@ export default function VisualTeaserSection() {
           {/* Floating Card 2 (Personal View) */}
           <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 rotate-[8deg] md:rotate-[10deg] z-20">
             <Image
-              src="/logo.png"
-              width={450}
-              height={300}
+              src="/my-zone.png"
+              width={650}
+              height={367}
               alt="Slam Stream Personal View Screenshot"
               className="rounded-lg shadow-2xl border border-gray-700 transform hover:scale-105 transition-transform duration-300"
             />
