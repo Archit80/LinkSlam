@@ -60,7 +60,7 @@ export function SidebarNav() {
         toast.error("Logout failed", { description: "Please try again." });
       }
     } catch (error) {
-      toast.error("Logout failed", { description: "An unexpected error occurred." });
+      toast.error("Logout failed", { description: `${error} An unexpected error occurred.` });
     }
   };
 

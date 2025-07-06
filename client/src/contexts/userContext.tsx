@@ -53,11 +53,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [router, pathname]);
 
   // Function to manually redirect to onboarding
-  const redirectToOnboarding = () => {
-    if (!pathname.includes('/auth/onboarding')) {
-      router.push('/auth/onboarding');
-    }
-  };
+  // (removed unused redirectToOnboarding function)
 
   const value = { user, setUser, loading }; // <-- ADD setUser TO THE CONTEXT VALUE
 

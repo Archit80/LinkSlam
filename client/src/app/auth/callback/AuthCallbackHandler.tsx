@@ -12,7 +12,7 @@ export default function AuthCallbackHandler() {
 
     if (token) {
       // Set the cookie and redirect
-      document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Lax; Secure`;
+      document.cookie = `token=${token}; path=/; max-age=604800; SameSite=None; Secure`;
       window.location.href = "/my-zone";
     } else {
       // Or redirect back to login if no token

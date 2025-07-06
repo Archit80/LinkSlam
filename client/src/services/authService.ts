@@ -1,20 +1,14 @@
-import axios from "axios";
+import api from "./axiosInstance";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-
-const api = axios.create({
-  baseURL: "/",
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "*/*",
-  },
-  withCredentials: true,
-});
 
 export const authService = {
   signup: async (userData: object) => {
     try {
       const response = await api.post("/api/auth/signup", userData);
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
       return response.data;
     } catch (error) {
       console.error("Error during sign up:", error);
@@ -25,6 +19,9 @@ export const authService = {
   login: async (userData: object) => {
     try {
       const response = await api.post("/api/auth/login", userData);
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
       return response.data;
     } catch (error) {
       console.error("Error during login:", error);
@@ -39,6 +36,7 @@ export const authService = {
 
   logout: async () => {
     try {
+      localStorage.removeItem("token");
       const response = await api.post("/api/auth/logout");
       return response;
     } catch (error) {
