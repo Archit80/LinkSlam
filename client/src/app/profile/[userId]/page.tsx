@@ -369,7 +369,7 @@ export default function ProfilePage( { params }: PageProps) {
             <div className="dark w-full lg:w-fit grid grid-cols-3 lg:grid-cols-1 gap-2 lg:gap-4 min-w-40 max-w-2xl ">
               {[
                 {
-                  label: "Slams",
+                  label: "Public Slams",
                   value: stats?.totalLinks || 0,
                   icon: LinkIcon,
                 },
