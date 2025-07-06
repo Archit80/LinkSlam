@@ -13,11 +13,11 @@ export default function CommunityPunchlineSection() {
 rethink how we collect and revisit the links that actually stick.
         </p>
         <div className="flex justify-center space-x-6">
-          <Link href="https://github.com/Archit80" target="main" className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
+          <Link href="https://github.com/Archit80/LinkSlam" target="_blank" className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
             <Github className="h-8 w-8" />
             <span className="text-lg font-medium">GitHub</span>
           </Link>
-          <Link href="https://instagram.com/archit.mp4" target="main"  className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
+          <Link href="https://instagram.com/archit.mp4" target="_blank"  className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
             <Instagram className="h-8 w-8" />
             <span className="text-lg font-medium">Instagram</span>
           </Link>

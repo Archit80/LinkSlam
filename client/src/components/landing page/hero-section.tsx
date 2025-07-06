@@ -164,7 +164,7 @@ export default function HeroSection() {
               width={650}
               height={400}
               alt="Slam Stream Demo"
-              className="rounded-xl object-cover"
+              className="rounded-xl object-cover [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_89%)]"
             />
           </motion.div>
         </div>
