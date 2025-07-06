@@ -77,6 +77,7 @@ export default function LoginPage() {
         });
 
         if (signupResponse && signupResponse.user) {
+          toast.dismiss();
           setUser(signupResponse.user);
           toast.success("Account created successfully!");
           router.push("/public-feed");
