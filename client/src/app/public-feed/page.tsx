@@ -234,18 +234,25 @@ export default function PublicFeedPage() {
     try {
       setIsLoading(true);
       const res = await publicLinksService.searchLinks("", tag);
-      // console.log("Search results for tag:", tag, res);
+      
+      // --- THIS IS THE FIX ---
+      // Defensively check for the links array. The API might return it directly,
+      // or inside a .data or .links property. Always fall back to an empty array [].
+      const links = res.data || res.links || (Array.isArray(res) ? res : []);
 
-      if (res.data && res.data.length === 0) {
+      if (links.length === 0) {
         toast.info(`No links found for tag: ${tag}`, {
           description: "Try searching with a different tag.",
         });
-      } else {
-        setPublicLinks(res.data || res.links);
       }
+      
+      // Always set the state to a valid array.
+      setPublicLinks(links);
+
       setHasMore(false); // disable pagination during search
     } catch (err) {
       showServerErrorToast("Failed to search by tag", err);
+      setPublicLinks([]); // Also ensure it's an array on error
     } finally {
       setIsLoading(false);
     }

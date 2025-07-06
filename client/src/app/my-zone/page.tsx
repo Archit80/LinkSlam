@@ -7,15 +7,17 @@ import { LinkCard, type LinkItem } from "@/components/link-card";
 import { LinkFormModal } from "@/components/link-form-modal";
 import { userLinksService } from "@/services/userLinksService";
 import { Skeleton } from "@/components/ui/skeleton";
+// import { useUser } from "@/contexts/userContext";
 
 export default function MySlamZonePage() {
-  const [links, setLinks] = useState<LinkItem[]>([]);
+  // const { user } = useUser();
+  const [links, setLinks] = useState<LinkItem[]>([]); // <-- FIX: Initialize with an empty array
+  const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "public" | "private">("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
-  const [filter, setFilter] = useState<"all" | "public" | "private">("private");
   const [topTags, setTopTags] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
   // A skeleton component that mimics the layout of your LinkCard
   const LinkCardSkeleton = () => (
