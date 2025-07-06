@@ -1,3 +1,5 @@
+"use client";
+
 import SiteHeader from "@/components/landing page/site-header"
 import HeroSection from "@/components/landing page/hero-section"
 import FeaturesSection from "@/components/landing page/features-section"
@@ -5,8 +7,11 @@ import VisualTeaserSection from "@/components/landing page/visual-teaser-section
 import CommunityPunchlineSection from "@/components/landing page/community-punchline-section"
 import SiteFooter from "@/components/landing page/site-footer"
 import { Particles } from "@/components/magicui/particles";
+import { useRedirectIfAuthenticated } from "@/hooks/useAuthGuard";
 
 export default function LandingPage() {
+  useRedirectIfAuthenticated(); // Redirect if already authenticated
+
   return (
     <div className="min-h-screen bg-[#060606] overflow-x-hidden text-white flex flex-col selection:bg-red-100 selection:text-red-700">
        <Particles 

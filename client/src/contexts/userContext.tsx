@@ -32,6 +32,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      // Check if token exists in localStorage first
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await authService.getCurrentUser();
         // console.log("Fetched user:", response.data);
@@ -43,6 +50,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (err) {
         console.error("Error fetching user:", err);
+        // If error fetching user, remove invalid token
+        localStorage.removeItem("token");
         setUser(null);
       } finally {
         setLoading(false);

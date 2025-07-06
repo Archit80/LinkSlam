@@ -72,7 +72,7 @@ export default function PublicFeedPage() {
     setIsModalOpen(true);
   };
 
-  const showServerErrorToast = (title: string, error: unknown) => {
+  const showServerErrorToast = useCallback((title: string, error: unknown) => {
     const apiErrorMessage =
       error && typeof error === 'object' && 'response' in error && 
       error.response && typeof error.response === 'object' && 'data' in error.response &&
@@ -82,7 +82,7 @@ export default function PublicFeedPage() {
     toast.error(title, {
       description: apiErrorMessage || "Unable to complete request. Please try again.",
     });
-  };
+  }, []);
 
   // Initial fetch
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function PublicFeedPage() {
       }
     };
     fetchInitialLinks();
-  }, []);
+  }, [showServerErrorToast]);
 
   // Load more links for pagination
   const loadMoreLinks = async () => {
@@ -189,29 +189,41 @@ export default function PublicFeedPage() {
       }
       try {
         const res = await searchUsers(query);
-        // console.log("User search results:", res);
         setUserSearchResults(res);
         setShowUserSuggestions(true);
       } catch (err) {
         showServerErrorToast("User search failed", err);
       }
-    } else {
+    } else { // searchType is 'links'
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const res = query.trim()
-          ? await publicLinksService.searchLinks(query, "")
-          : await publicLinksService.getPublicFeedLinks(1, PAGE_LIMIT); // fetch all with pagination
+        if (!query.trim()) {
+          // If search is cleared, fetch initial links and reset pagination
+          const res = await publicLinksService.getPublicFeedLinks(1, PAGE_LIMIT);
+          setPublicLinks(res.links || res.data || []);
+          setHasMore(res.hasMore);
+          setPage(2);
+        } else {
+          // If there is a search query, fetch search results
+          const res = await publicLinksService.searchLinks(query, "");
+          
+          const searchResults = res.data || res.links || (Array.isArray(res) ? res : []);
 
-        setPublicLinks(res.data || res.links || []);
-        setHasMore(res.hasMore); // Correctly set hasMore from the response
-        setPage(2); // Reset page to 2 for subsequent loads
+          if (searchResults.length === 0) {
+            toast.info(`No links found for "${query}"`);
+          }
+          
+          setPublicLinks(searchResults);
+          setHasMore(false); // Disable pagination for search results
+        }
       } catch (err) {
         showServerErrorToast("Search failed", err);
+        setPublicLinks([]); // Clear links on error
       } finally {
         setIsLoading(false);
       }
     }
-  }, [searchType, query, setUserSearchResults, setShowUserSuggestions, setIsLoading, setPublicLinks, setHasMore]);
+  }, [searchType, query, showServerErrorToast]);
 
   const latestQuery = useRef(query);
   const latestSearchType = useRef(searchType);
