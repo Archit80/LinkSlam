@@ -85,7 +85,7 @@ export default function ProfileSettingsPage() {
 
     // Redirect immediately without waiting for API response
     toast.loading("Setting up your profile...", { id: "profile-setup" });
-    router.replace("/my-zone");
+    router.replace("/public-feed");
 
     // Update profile in background
     try {
