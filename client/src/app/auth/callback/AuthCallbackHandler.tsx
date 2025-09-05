@@ -11,13 +11,13 @@ export default function AuthCallbackHandler() {
     const token = searchParams.get("token");
 
     if (token) {
-      // Store token in localStorage instead of cookies
+      // Store token in localStorage and redirect immediately
       localStorage.setItem("token", token);
-      // Redirect to landing page, which will handle the redirect logic
-      window.location.href = "/";
+      // Redirect to landing page which will handle the proper routing
+      router.replace("/");
     } else {
       // Or redirect back to login if no token
-      router.push("/auth");
+      router.replace("/auth");
     }
   }, [router, searchParams]);
 

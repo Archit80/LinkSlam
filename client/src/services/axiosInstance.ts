@@ -29,13 +29,16 @@ api.interceptors.response.use(
       // Token expired or invalid, remove it
       if (typeof window !== 'undefined') {
         localStorage.removeItem("token");
-        // Only redirect if we're not already on auth pages
+        // Only redirect on explicit auth failures, not during normal user fetching
         const currentPath = window.location.pathname;
-        if (!currentPath.startsWith('/auth') && currentPath !== '/') {
-          // Use a gentler redirect that doesn't interrupt user flow
+        const isAuthPage = currentPath.startsWith('/auth') || currentPath === '/';
+        
+        // Don't redirect if we're already on an auth page or landing page
+        if (!isAuthPage) {
+          // Use router instead of window.location for smoother navigation
           setTimeout(() => {
-            window.location.href = '/auth';
-          }, 100);
+            window.location.href = '/';
+          }, 500);
         }
       }
     }

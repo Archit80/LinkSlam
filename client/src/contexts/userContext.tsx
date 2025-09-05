@@ -46,8 +46,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(response.data); // response from /auth/me
 
         if (response.data?.isNewUser && !pathname.includes('/auth/onboarding')) {
-          // Only redirect if we're not already on an auth page
-          if (!pathname.startsWith('/auth')) {
+          // Only redirect if we're on the landing page - let other pages handle their own redirects
+          if (pathname === '/') {
             router.push('/auth/onboarding');
           }
         }

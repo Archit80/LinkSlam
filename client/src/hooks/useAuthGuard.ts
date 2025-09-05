@@ -29,13 +29,12 @@ export function useRedirectIfAuthenticated() {
     if (loading || !token) return;
     
     if (user) {
-      // If user is new, redirect to onboarding
+      // Redirect immediately based on user status
       if (user.isNewUser) {
-        router.push('/auth/onboarding');
-        return;
+        router.replace('/auth/onboarding');
+      } else {
+        router.replace("/my-zone");
       }
-      // Otherwise redirect to my-zone
-      router.push("/my-zone");
     }
   }, [router, user, loading]);
 }

@@ -83,23 +83,19 @@ export default function ProfileSettingsPage() {
     const usernameSanitized = username.trim().toLowerCase();
     const bioSanitized = bio.trim();
 
+    // Redirect immediately without waiting for API response
+    toast.loading("Setting up your profile...", { id: "profile-setup" });
+    router.replace("/my-zone");
+
+    // Update profile in background
     try {
-      // console.log("sending",   nameSanitized,
-      //   usernameSanitized,
-      //   bioSanitized,);
-      
-      const response = await authService.updateProfile({
+      await authService.updateProfile({
         name: nameSanitized,
         username: usernameSanitized,
         bio: bioSanitized,
       });
-      // console.log("Profile update response:", response);
-
-      if (response.success) {
-        toast.success("Profile updated successfully! 🎉");
-        // Redirect to landing page, which will handle the authenticated user redirect
-        router.replace("/");
-      }
+      
+      toast.success("Profile updated successfully! 🎉", { id: "profile-setup" });
     } catch (error) {
       console.error("Error updating profile:", error);
       
@@ -109,9 +105,9 @@ export default function ProfileSettingsPage() {
         error.response && typeof error.response === 'object' && 'data' in error.response &&
         error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data
           ? String(error.response.data.message)
-          : "Failed to update profile. Please try again.";
+          : "Profile update failed, but you can update it later in settings.";
       
-      toast.error(errorMessage);
+      toast.error(errorMessage, { id: "profile-setup" });
     } finally {
       setLoading(false);
     }

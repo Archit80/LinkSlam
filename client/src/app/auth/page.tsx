@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Mail, Lock, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { authService } from "@/services/authService"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useUser } from "@/contexts/userContext"
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthGuard"
@@ -18,6 +19,7 @@ import axios from "axios"; // <-- Make sure this import is present
 export default function LoginPage() {
   useRedirectIfAuthenticated(); // Redirect if already authenticated
   const { setUser } = useUser();
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -42,7 +44,13 @@ export default function LoginPage() {
         if (loginResponse && loginResponse.user) {
           setUser(loginResponse.user);
           toast.success("Login successful!");
-          // Let the authentication system handle the redirect
+          
+          // Redirect immediately based on user status
+          if (loginResponse.user.isNewUser) {
+            router.push("/auth/onboarding");
+          } else {
+            router.push("/my-zone");
+          }
           return;
         } else {
           setError(loginResponse.message || "An unexpected error occurred.");
@@ -81,7 +89,13 @@ export default function LoginPage() {
           toast.dismiss();
           setUser(signupResponse.user);
           toast.success("Account created successfully!");
-          // Let the authentication system handle the redirect
+          
+          // Redirect immediately based on user status
+          if (signupResponse.user.isNewUser) {
+            router.push("/auth/onboarding");
+          } else {
+            router.push("/my-zone");
+          }
           return;
         } else {
           setError(signupResponse.message || "Signup failed. Please try again.");
