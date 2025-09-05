@@ -51,8 +51,15 @@ export const signup = async (req, res) => {
       .json({
         token,
         user: {
+          _id: newUser._id,
           id: newUser._id,
           email: newUser.email,
+          name: newUser.name,
+          username: newUser.username,
+          bio: newUser.bio,
+          isNewUser: newUser.isNewUser,
+          profileImage: newUser.profileImage,
+          createdAt: newUser.createdAt,
         },
       });
   } catch (error) {
@@ -156,9 +163,17 @@ export const login = async (req, res) => {
       .json({
         token,
         user: {
+          _id: existingUser._id,
           id: existingUser._id,
           email: existingUser.email,
           name: existingUser.name,
+          username: existingUser.username,
+          bio: existingUser.bio,
+          isNewUser: existingUser.isNewUser,
+          profileImage: existingUser.profileImage,
+          createdAt: existingUser.createdAt,
+          likedLinks: existingUser.likedLinks,
+          savedLinks: existingUser.savedLinks,
         },
       });
   } catch (error) {
