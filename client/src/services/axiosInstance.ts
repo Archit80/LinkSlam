@@ -29,9 +29,13 @@ api.interceptors.response.use(
       // Token expired or invalid, remove it
       if (typeof window !== 'undefined') {
         localStorage.removeItem("token");
-        // Optionally redirect to login
-        if (window.location.pathname !== '/auth' && window.location.pathname !== '/') {
-          window.location.href = '/auth';
+        // Only redirect if we're not already on auth pages
+        const currentPath = window.location.pathname;
+        if (!currentPath.startsWith('/auth') && currentPath !== '/') {
+          // Use a gentler redirect that doesn't interrupt user flow
+          setTimeout(() => {
+            window.location.href = '/auth';
+          }, 100);
         }
       }
     }

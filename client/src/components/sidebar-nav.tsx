@@ -51,16 +51,18 @@ export function SidebarNav() {
 
   const handleLogout = async () => {
     try {
-      const response = await authService.logout();
-      // --- THIS IS THE FIX ---
-      // Check for the success property in the returned data, not the status.
-      if (response && response.data) {
-        router.replace("/");
-      } else {
-        toast.error("Logout failed", { description: "Please try again." });
-      }
+      await authService.logout();
+      // Clear local state immediately
+      localStorage.removeItem("token");
+      // Redirect to landing page
+      router.replace("/");
+      toast.success("Logged out successfully!");
     } catch (error) {
-      toast.error("Logout failed", { description: `${error} An unexpected error occurred.` });
+      console.error("Logout error:", error);
+      // Even if logout fails, clear token and redirect
+      localStorage.removeItem("token");
+      router.replace("/");
+      toast.success("Logged out successfully!");
     }
   };
 

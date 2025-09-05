@@ -13,7 +13,8 @@ export default function AuthCallbackHandler() {
     if (token) {
       // Store token in localStorage instead of cookies
       localStorage.setItem("token", token);
-      window.location.href = "/my-zone";
+      // Redirect to landing page, which will handle the redirect logic
+      window.location.href = "/";
     } else {
       // Or redirect back to login if no token
       router.push("/auth");

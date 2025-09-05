@@ -97,7 +97,8 @@ export default function ProfileSettingsPage() {
 
       if (response.success) {
         toast.success("Profile updated successfully! 🎉");
-        router.replace(`/public-feed`);
+        // Redirect to landing page, which will handle the authenticated user redirect
+        router.replace("/");
       }
     } catch (error) {
       console.error("Error updating profile:", error);

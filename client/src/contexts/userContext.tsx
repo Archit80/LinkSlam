@@ -14,6 +14,7 @@ export interface User {
   likedLinks?: string[];
   savedLinks?: string[];
   createdAt?: string;
+  isNewUser?: boolean;
 }
 
 interface UserContextType {
@@ -45,8 +46,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(response.data); // response from /auth/me
 
         if (response.data?.isNewUser && !pathname.includes('/auth/onboarding')) {
-          // console.log("New user detected, redirecting to onboarding...");
-          router.push('/auth/onboarding');
+          // Only redirect if we're not already on an auth page
+          if (!pathname.startsWith('/auth')) {
+            router.push('/auth/onboarding');
+          }
         }
       } catch (err) {
         console.error("Error fetching user:", err);
